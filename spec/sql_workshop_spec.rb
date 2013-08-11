@@ -22,4 +22,17 @@ describe SQLAwesome do
       assert_equal [{"1"=>1},{"2"=>2},{"3"=>3}], result
     end
   end
+  describe '"tables"' do
+    before do
+      require 'csv'
+      @hat_data = []
+      CSV.foreach("data/hats.csv", headers: true) do |row|
+        @hat_data << row
+      end
+    end
+    it "should support wildcards" do
+      result = SQLAwesome.eval "SELECT * FROM hats", hats: @hat_data
+      assert_equal @hat_data, result
+    end
+  end
 end
