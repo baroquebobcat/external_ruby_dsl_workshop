@@ -34,8 +34,6 @@ module SQLAwesome
           :table_name => simple(:from) )   { AST::FromSelect.new args, from}
     rule(:select => simple(:select),
           :args => simple(:args))   { AST::Select.new args}
-    rule(:select => simple(:select),
-          :args => sequence(:args))   { AST::Select.new args}
     rule(:wildcard => simple(:wildcard)) { AST::Wildcard.new }
   end
 
