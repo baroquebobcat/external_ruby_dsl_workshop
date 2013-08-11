@@ -8,7 +8,8 @@ module SQLAwesome
     rule(:select) { str("SELECT").as(:select) >> space? >>
                     arguments.as(:args) >> from.maybe }
     rule(:arguments) { (argument_list.as(:args) | wildcard) >> space? }
-    rule(:argument_list) { integer >> (comma >> integer).repeat  }
+    rule(:argument_list) { argument >> (comma >> argument).repeat  }
+    rule(:argument) { integer.as(:integer_argument) | ident.as(:column_argument) }
 
     rule(:from) { str("FROM") >> space? >> ident.as(:table_name) }
 
@@ -29,6 +30,8 @@ module SQLAwesome
     rule(:integer => simple(:int))  { AST::IntLiteral.new int }
     rule(:args => simple(:arg)) { AST::SelectArgs.new [arg] }
     rule(:args => sequence(:args)) { AST::SelectArgs.new args }
+    rule(:integer_argument => simple(:int)) { AST::IntArgument.new int}
+    rule(:column_argument => simple(:name)) { AST::ColumnArgument.new name}
     rule(:select => simple(:select),
           :args => simple(:args),
           :table_name => simple(:from) )   { AST::FromSelect.new args, from}
@@ -49,11 +52,30 @@ module SQLAwesome
     end
 
     class SelectArgs < Struct.new(:args)
-      def eval database
-        args.map do |arg|
-          value = arg.eval
-          {value.to_s => value}
+      def eval table
+        table.map do |row|
+          Hash[
+            args.map { |arg| [arg.name, arg.eval(row)] }
+          ]
         end
+      end
+    end
+
+    class IntArgument < Struct.new(:int)
+      def name
+        int.eval.to_s # :/
+      end
+      def eval row
+        int.eval
+      end
+    end
+
+    class ColumnArgument < Struct.new(:column_name)
+      def name
+        column_name.to_s
+      end
+      def eval row
+        row[name]
       end
     end
 
@@ -66,7 +88,7 @@ module SQLAwesome
 
     class Select < Struct.new(:args)
       def eval table
-        args.eval table
+        args.eval [{}]
       end
     end
   end
