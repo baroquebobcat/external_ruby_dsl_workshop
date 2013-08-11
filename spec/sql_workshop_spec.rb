@@ -13,4 +13,11 @@ describe SQLAwesome do
     
     assert_equal [{"2"=>2}], result
   end
+
+
+  it "allows selecting multiple values" do
+    result = SQLAwesome.eval "SELECT 1,2,3"
+    
+    assert_equal [{"1"=>1},{"2"=>2},{"3"=>3}], result
+  end
 end
