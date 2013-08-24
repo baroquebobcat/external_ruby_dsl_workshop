@@ -1,4 +1,5 @@
 require 'parslet'
+require "parslet_ext"
 
 module SQLAwesome
   class Parser < Parslet::Parser
@@ -9,7 +10,7 @@ module SQLAwesome
                     arguments.as(:args) >> from.maybe }
     rule(:arguments) { (argument_list.as(:args) | wildcard) >> space? }
     rule(:argument_list) { argument >> (comma >> argument).repeat  }
-    rule(:argument) { integer.as(:integer_argument) | ident.as(:column_argument) }
+    rule(:argument) { (integer.as(:integer_argument) | ident.as(:column_argument)).raw_as(:name)}
 
     rule(:from) { str("FROM") >> space? >> ident.as(:table_name) }
 
@@ -30,8 +31,8 @@ module SQLAwesome
     rule(:integer => simple(:int))  { AST::IntLiteral.new int }
     rule(:args => simple(:arg)) { AST::SelectArgs.new [arg] }
     rule(:args => sequence(:args)) { AST::SelectArgs.new args }
-    rule(:integer_argument => simple(:int)) { AST::IntArgument.new int}
-    rule(:column_argument => simple(:name)) { AST::ColumnArgument.new name}
+    rule(:integer_argument => simple(:int), :name => simple(:name)) { AST::IntArgument.new int}
+    rule(:column_argument => simple(:name), :name => simple(:raw)) { AST::ColumnArgument.new name}
     rule(:select => simple(:select),
           :args => simple(:args),
           :table_name => simple(:from) )   { AST::FromSelect.new args, from}
