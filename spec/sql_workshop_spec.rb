@@ -9,10 +9,10 @@ describe SQLAwesome do
       assert_equal [{"1"=>1}], result
     end
 
-  #   it "has hello world, but with 2" do
-  #     result = SQLAwesome.eval "SELECT 2"
-  #     assert_equal [{"2"=>2}], result
-  #   end
+    it "has hello world, but with 2" do
+      result = SQLAwesome.eval "SELECT 2"
+      assert_equal [{"2"=>2}], result
+    end
 
 
   #   it "allows selecting multiple values" do
