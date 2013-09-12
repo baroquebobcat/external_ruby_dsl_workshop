@@ -1,5 +1,5 @@
 module SQLAwesome
-  class Transform < Parslet::Transform
-    # rule(:integer => simple(:int))  { AST::IntLiteral.new int }
+  class Transformer < Parslet::Transform
+    rule(:integer => simple(:int))  { SemanticModel::Statement.new int }
   end
 end
