@@ -1,6 +1,8 @@
 module SQLAwesome
   class Parser < Parslet::Parser
-    # root :statement
+    root :statement
+
+    rule(:statement) { str("SELECT") >> space? >> integer }
 
     rule(:ident) { match('[a-zA-Z]') >> match('\w').repeat }
     rule(:space)      { match('\s').repeat(1) }
