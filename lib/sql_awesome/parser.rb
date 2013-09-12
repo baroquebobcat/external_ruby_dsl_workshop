@@ -4,7 +4,7 @@ module SQLAwesome
 
     rule(:statement) { str("SELECT") >> space? >> integer_list.as(:select_args) }
 
-    rule(:integer_list) { (integer >> comma).repeat >> integer }
+    rule(:integer_list) { integer.repeat(1, 1) >> (comma >> integer).repeat }
 
     rule(:ident) { match('[a-zA-Z]') >> match('\w').repeat }
     rule(:space)      { match('\s').repeat(1) }
