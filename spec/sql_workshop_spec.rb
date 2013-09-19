@@ -16,7 +16,7 @@ describe SQLAwesome do
       assert_equal [{"1"=>1, "2"=>2, "3"=>3}], result
     end
    end
-   describe '"tables"' do
+   describe "tables" do
     before do
       require 'csv'
       @hat_data = []
