@@ -1,6 +1,8 @@
 module SQLAwesome
+  # The transformer convers the intermediate tree built by the parser
+  # into the semantic model.
   class Transformer < Parslet::Transform
-    rule(:select_args => sequence(:args))  { SemanticModel::Statement.new args }
-    rule(:integer => simple(:int))  { SemanticModel::Integer.new int }
+    # rule(:somename => sequence(:args))  { Blah.new args }
+    # rule(:x => simple(:y))  { Blah.new y }
   end
 end
