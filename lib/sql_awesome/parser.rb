@@ -6,6 +6,8 @@ module SQLAwesome
 
     rule(:integer_list) { integer.repeat(1, 1) >> (comma >> integer).repeat }
 
+    # handy list pattern x.repeat(1,1) > (y >> x).repeat
+
     rule(:ident) { match('[a-zA-Z]') >> match('\w').repeat }
     rule(:space)      { match('\s').repeat(1) }
     rule(:space?)     { space.maybe }
