@@ -1,0 +1,152 @@
+External DSLs in Ruby
+======================
+
+Schedule
+--------
+
+ * 8:00 - 9:00: Overview of DSLs / what we're doing today
+ * 9:00 - 9:10: break
+ * 9:10 - 11:30: Curriculum
+
+Overview
+--------
+
+# Rocking the workshop
+
+ * Ask questions
+ * Type along w/ me
+ * Notes are on github.com/baroquebobcat/dsl_workshop
+ * If you've got Q's after
+   * twitter: @baroquebobcat
+   * email: ndh@baroquebobcat.com
+
+# Goals
+
+ * Know when to use DSL
+ * Know how to build an External DSL
+ * Introduced to Compiler concepts like parsing
+
+# DSLs
+
+> Domain-specific language (noun): a computer programming language of limited 
+> expressiveness focused on a particular domain.
+
+-- http://martinfowler.com/dsl.html
+
+DSLs are languages that let you describe computation in a particular domain in a way that's well tailored to that domain. Often that means that they are easier to understand than the equivalent code in a general language because they have no content that's not related to the problem at hand.
+
+There are whole bunches of them: haml, sass, arel, jQuery, SQL, graphviz, regex, rake, make, rspec, Gherkin ...
+
+## Internal vs External DSLs
+
+Internal DSLs are embedded in a host programming language, eg rake. External DSLs have their own syntax, so they require their own parser.
+
+Examples of Internal DSLs include libraries like Rake, or Arel from ActiveRecord.
+
+### Builder vs Haml
+Builder and Haml are both libraries that allow you to generate HTML. Haml is an External DSL. It has it's own syntax and parser, which allows it to have features like semantic whitespace and short ways of describing common HTMLisms.
+
+Builder is an Internal DSL that builds arbitrary XML. Because it's an Internal DSL, it has to keep to Ruby's syntax, which means that it is more verbose than using Haml. But, writing the equivalent with regular imperative Ruby would be a lot more annoying and the structure of the data would be obscured more by other language constructs.
+
+#### Haml
+```haml
+%section.container
+  %h1= "title"
+  %h2= "subtitle"
+  .content
+    = "some content"
+```
+#### Builder
+```ruby
+builder = Builder::XmlMarkup.new
+builder.section(class: "container") do |b|
+  b.h1 "title"
+  b.h2 "subtitle"
+  b.div("some content", class: "content")
+end
+```
+
+### SQL
+
+Since we're building a SQL implementation, I thought I'd also show some examples for representing equivalent computations with it.
+
+SQL
+```sql
+select name, age from persons where favorite_food = 'bananas' limit 10
+```
+Ruby
+```ruby
+tables["persons"].select{|p|p["favorite_food"]=="bananas"}.map{|p| {name: p["name"], age: p["age"]}.first 10
+```
+Rails
+```ruby
+Person.where(favorite_food: 'bananas').select(:name, :age).limit(10)
+```
+Java
+```java
+// don't even get me started
+```
+
+## Why Use DSLs & Why External specifically?
+
+As I showed in the examples above, DSLs are handy because they allow you to write programs that are closer to the problem you are trying to solve with less extraneous bits. They might not be good at solving problems outside their domain (eg: Regex for XML), but they are great at the domain they are designed for.
+
+DSLs can also be a communication tool with non-technical stakeholders. When you write programs using only domain terminology, you make those programs grokable by domain experts.
+
+External DSLs are especially good for this because they don't carry any extra features / syntax from another language.
+
+## When would you want to avoid using a DSL
+
+-------------------------------------------------
+
+
+Convert to slides
+-----------------
+
+# one plus one
+(0) `1 + 2`
+(1) 
+
+digraph hello {
+  plus[label="+"];
+  plus -> 1;
+  plus -> 2;
+}
+(2) `Add.new Int.new("1"), Int.new("2")`
+(3) `#=> 3`
+
+# Hello World Transitions
+
+(0) -> (1) Tree Construction
+(1) -> (2) Transformation
+(2) -> (3) Evaluation
+
+# Tree Construction
+
+> In order to construct the tree, we need to write a grammar
+> a dumb grammar for this would be
+
+`int.as(:left) >> plus.as(:add) >> int.as(:right)`
+
+> which would leave us with
+
+`{left: "1", add: "+", right: "2"}`
+
+# Transform
+
+> We'd then need to transform that.
+> In parslet, that'd look like this:
+```ruby
+  rule(left: simple(:l),
+       add: simple(:op),
+       right: simple(:r)) { Add.new Int.new(l), Int.new(r) }
+```
+
+> `rule` takes a pattern that matches portions of the intermediate tree, & then runs the resulting block on that subtree.
+
+
+
+----------------------
+
+
+
