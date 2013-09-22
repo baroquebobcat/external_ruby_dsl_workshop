@@ -196,7 +196,7 @@ digraph hello {
             .///`         `\\\.
            `//`             `\\`
 ```
-
+[source](http://www.retrojunkie.com/asciiart/health/skeleton.htm)
 # Wild Card Walking Skeleton
 
 Our first SQL query to implement is this one:
