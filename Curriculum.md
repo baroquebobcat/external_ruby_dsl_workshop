@@ -217,8 +217,8 @@ Through it, we'll build a small part of all the needed pieces of our interpreter
 
 It's transitions
 
-0. `SELECT * FROM one_to_five`
-1.
+ 0. `SELECT * FROM one_to_five`
+ 1.
 ```
 digraph wildcard_0 {
   query -> from_table;
@@ -235,11 +235,13 @@ digraph wildcard_0 {
 }
 ```
 
-2. `SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))`
+ 2. `SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))`
 
-3. `[{"dec"=>1,"eng"=>"one"},
+ 3. ```ruby
+[{"dec"=>1,"eng"=>"one"},
     #... 
-   ]`
+   ]
+```
 
 ## First Step of the Skeleton: Acceptance spec.
 
