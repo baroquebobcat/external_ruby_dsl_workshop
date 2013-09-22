@@ -501,7 +501,7 @@ Here's the implementation:
 ```ruby
     rule(args: simple(:args),
          from: simple(:table_name)) { 
-           SelectQuery.new(WildCard.new, table_name)
+           SemanticModel::SelectQuery.new(SemanticModel::WildCard.new, table_name)
          }
 ```
 
@@ -523,6 +523,156 @@ Let's run tests again.
 ```
   2) Error:
 test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer):
-NameError: uninitialized constant SQLAwesome::Transformer::SelectQuery
+NameError: uninitialized constant SQLAwesome::SemanticModel::SelectQuery
     /Users/nick/hacking/sql_workshop/lib/sql_awesome/transformer.rb:5:in `block in <class:Transformer>'
+```
+
+Our semantic model classes don't exist yet! What should we do? Write more tests of course. To start, we'll just write enough to make the Transformer happy.
+
+In `spec/semantic_model_spec.rb`
+```ruby
+describe SelectQuery do
+  it "has a nice inspect format" do
+    query = SelectQuery.new "args", "table"
+    query.inspect.must_equal "Query: \"args\" FromTable:table"
+  end
+end
+```
+
+```
+$ rake
+sql_workshop/spec/semantic_model_spec.rb:6:in `block in <top (required)>': uninitialized constant SelectQuery (NameError)
+```
+
+Missing constant? Easily done.
+
+```ruby
+module SQLAwesome
+  module SemanticModel
+    class SelectQuery < Struct.new(:args, :from_table)
+    end
+  end
+end
+```
+
+```
+
+  2) Failure:
+test_0001_has a nice inspect format(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [/Users/nick/hacking/sql_workshop/spec/semantic_model_spec.rb:9]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-"Query: \"args\" FromTable:table"
++"#<struct SQLAwesome::SemanticModel::SelectQuery args=\"args\", from_table=\"table\">"
+```
+
+Let's add a better `inspect`.
+
+```ruby
+  def inspect
+    "Query: #{args.inspect} FromTable:#{from_table}"
+  end
+```
+
+Bam! now that test passes. But the transformer is still unhappy:
+```
+  2) Error:
+test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer):
+NameError: uninitialized constant SQLAwesome::SemanticModel::WildCard
+```
+
+Let's add it, but first a test.
+
+```ruby
+  describe WildCard do
+    it "has an inspect that says it shows all fields" do
+      WildCard.new.inspect.must_equal "Fields:all"
+    end
+  end
+```
+
+Failure on const after running `rake`:
+```
+sql_workshop/spec/semantic_model_spec.rb:12:in `block in <top (required)>': uninitialized constant WildCard (NameError)
+```
+
+Fix it in `lib/sql_awesome/semantic_model.rb`:
+
+```ruby
+class WildCard
+end
+```
+
+Now it's failing properly:
+
+```
+  2) Failure:
+test_0001_has an inspect that says it shows all fields(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::WildCard) [/Users/nick/hacking/sql_workshop/spec/semantic_model_spec.rb:14]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-"Fields:all"
++"#<SQLAwesome::SemanticModel::WildCard:0xXXXXXX>"
+```
+
+Let's fix that now with
+
+```ruby
+  def inspect
+    "Fields:all"
+  end
+```
+
+And we're back to one failing test, our acceptance test.
+
+```
+  1) Error:
+test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
+NoMethodError: private method `eval' called for Query: Fields:all FromTable:one_to_five:SQLAwesome::SemanticModel::SelectQuery
+    /Users/nick/hacking/sql_workshop/lib/sql_awesome/rdbms.rb:13:in `eval'
+```
+
+Now the problem is that we are calling eval on a SelectQuery object. Isn't that cool. It looks like all that's left is to add tests, and a method.
+
+
+```ruby
+  it "gives you back all the things in the table when args is a wild card" do
+    query = SelectQuery.new WildCard.new, "a"
+    result = query.eval "a" => [{"x"=>1}]
+    result.must_equal [{"x"=>1}]
+  end
+```
+
+Tests fail, as expected.
+```
+  2) Error:
+test_0002_gives you back all the things in the table when args is a wild card(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery):
+NoMethodError: private method `eval' called for Query: Fields:all FromTable:a:SQLAwesome::SemanticModel::SelectQuery
+```
+Add the missing method:
+```ruby
+def eval database
+end
+```
+```
+  2) Failure:
+test_0002_gives you back all the things in the table when args is a wild card(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [/Users/nick/hacking/sql_workshop/spec/semantic_model_spec.rb:15]:
+Expected: [{"x"=>1}]
+  Actual: nil
+```
+
+What should a SelectQuery do in this case? Well the simplest thing that could possibly work is to just look up the table.
+
+```ruby
+  database[from_table]
+```
+
+Now everything should be passing, but the acceptance test isn't. Why is that? If we took the time to put debug print statements in RDBMS.eval, what you'd see is that we are looking up the right table and the table is in the `@tables` hash. What gives?
+
+This is a Parslet being a little tricky problem. Parslet, when it tokenizes, doesn't give you strings, it gives you `Slice`s, which means that when you try to use them as hash keys, weird things can happen(I bet there's a way to fix it, but I digress).
+
+For now, the easiest way to ensure it works is to call `to_s` on the strings in the transformer.
+
+```ruby
+SemanticModel::SelectQuery.new(SemanticModel::WildCard.new, table_name.to_s)
 ```
