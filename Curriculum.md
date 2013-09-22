@@ -149,4 +149,124 @@ digraph hello {
 ----------------------
 
 
+#Walking Skeleton
 
+```
+
+
+                 .-"```"-.
+                /         \
+                |  _   _  |
+                | (_\ /_) |
+                (_   A   _)
+                 | _____ |
+                 \`"""""`/
+                  '-.-.-'
+                   _:=:_                   \\|
+            .-""""`_'='_`""""-.           \///
+           (`,-- -`\   /`- --,`)          (`/
+           / //`-_--| |--_-`\\ \         .//
+          / /(_-_  _| |_  _-_)\ \       ///
+         / / (_- __ \ / __ -_) \ \     ///
+        / /  (_ -_ - ^ - _- _)  \ \   ///
+       / /   (_-  _ /=\ _ - _)   \ \ '//
+      / /     (_ -.':=:'. -_)     \ \//
+     (`;`     (_-'  :=:  '-_)      (_,'
+      \\.   jgs __  :=:  __
+       \\\    .'  `':=:'`  '.
+        \\\  |  .--. = .--.  |
+         \\\ |  (  / = \  )  |
+          \\` \ _`' \=/ '`_ /
+          ;`)  ( ;_/`v`\_; )
+          |||\ | |       | |
+          |\\  | |       | |
+               | |       | |
+               | |       | |
+               | |       | |
+               | |       | |
+               | |       | |
+              (._)       (_.)
+               ||,       ,||
+               ||:       :||
+               ||:       :||
+               ||:       :||
+               ||:       :||
+               ||'       '||
+              ///)       (\\\
+            .///`         `\\\.
+           `//`             `\\`
+```
+
+# Wild Card Walking Skeleton
+
+Our first SQL query to implement is this one:
+
+`SELECT * FROM one_to_five`
+
+Through it, we'll build a small part of all the needed pieces of our interpreter.
+
+
+It's transitions
+
+0. `SELECT * FROM one_to_five`
+1.
+```
+digraph wildcard_0 {
+  query -> from_table;
+  from_table[shape="record"; label="FROM|one_to_five"]
+}
+```
+We could build a tree like this, but I'm anticipating that we'll likely want to have different behavior for other SELECT args in the future. So, we'll make one that looks more like this:
+
+```
+digraph wildcard_0 {
+  query -> from_table;
+  query -> args[shape="record"; label="args|*"]
+  from_table[shape="record"; label="FROM|one_to_five"]
+}
+```
+
+2. `SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))`
+
+3. `[{"dec"=>1,"eng"=>"one"},
+    #... 
+   ]`
+
+## First Step of the Skeleton: Acceptance spec.
+
+Open up `spec/sql_awesome_spec.rb`.
+
+```ruby
+describe SQLAwesome do
+  # acceptance specs go here
+end
+```
+
+Here we're going to add our first spec.
+
+```ruby
+describe SQLAwesome do
+  it "retrieves all columns for all rows with a wildcard" do
+    db = SQLAwesome.new_from_csv_dir "#{File.dirname(__FILE__)}/../data/"
+
+    result = db.eval "SELECT * FROM one_to_five"
+    result.must_equal db["one_to_five"]
+  end
+end
+```
+
+Some of this I wrote already to simplify things
+
+```ruby
+    db = SQLAwesome.new_from_csv_dir "#{File.dirname(__FILE__)}/../data/"
+```
+
+builds a `RDBMS` object with tables populated from the passed directory. It's specs are in `spec/rdbms_spec.rb` if you're interested.
+
+The neat bit of the spec is
+```ruby
+    result = db.eval "SELECT * FROM one_to_five"
+    result.must_equal db["one_to_five"]
+```
+
+What we're saying here is that evaling our wildcard query is equivalent to looking at the table directly.
