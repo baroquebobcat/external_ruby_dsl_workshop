@@ -451,4 +451,78 @@ After adding the new code, the parser test is passing, and we're back to having 
   1) Error:
 test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
 NoMethodError: private method `eval' called for {:args=>"*"@7, :from=>"one_to_five"@14}:Hash
+    sql_workshop/lib/sql_awesome/rdbms.rb:13:in `eval'
+```
+
+What's going on here? Let's look back at `eval`
+
+```ruby
+    def eval query_string
+      intermediate_tree = Parser.new.parse query_string
+      model = Transformer.new.apply intermediate_tree
+      model.eval @tables # line 13
+    end
+```
+
+The problem is our `Transformer` isn't transforming anything! If you look in `lib/sql_awesome/transformer.rb`, you'll see it doesn't have much in it yet.
+
+Parslet's transform framework helps you to convert the intermediate data structure created by it's parser into something more useful. In our case, we're going to use it to populate our semantic model of a SQL query.
+
+It shares a similar interface with the parser's DSL, but instead of naming things on the left and describing what they match on the right, it describes what to match on the left and what to do with it on the right.
+
+For our current tree, we only need one rule to transform into the right model classes--but before we do that, let's write a test.
+
+```ruby
+it "converts {args:'*', from:'a'} into a wild card query object" do
+  result = SQLAwesome::Transformer.new.apply args:'*', from:'a'
+
+  result.inspect.must_equal "Query: Fields:all FromTable:a"
+end
+```
+
+This is probably not the best test we could write, but again, the point of the walking skeleton is to get all the pieces in place for building out more things. We can clean it up later if it comes to that.
+
+Let's run tests again:
+
+```
+  2) Failure:
+test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [/Users/nick/hacking/sql_workshop/spec/transformer_spec.rb:8]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-"Query: Fields:all FromTable:a"
++"{:args=>\"*\", :from=>\"a\"}"
+```
+
+Sweet! A new failure! Since a transform with no rules does nothing, the resulting object is currently the input. Let's change that.
+
+Here's the implementation:
+
+```ruby
+    rule(args: simple(:args),
+         from: simple(:table_name)) { 
+           SelectQuery.new(WildCard.new, table_name)
+         }
+```
+
+Put this inside `lib/sql_awesome/transformer.rb` next to / replacing the commented out rules.
+
+What does it do? Like I said above, Parslet's transforms work as pattern matchers. Our pattern is
+
+```ruby
+{        args: simple(:args),
+         from: simple(:table_name)}
+```
+
+Which tells parslet to look for hashes inside the intermediate tree that have the keys `:args` and `:from` whose values are `simple`. When it finds a matching hash, it calls the block and replaces the matched portion of the tree with the result. While it's matching, it walks the tree leaves up, so each subtree is completed before going to it's parent. This lets you do some neat stuff, for example you could potentially write a calculator language that does all it's calculating in the transformer.
+
+Values are `simple` if they are not arrays or hashes. So in our code, `args: simple(:args)` will match a hash that has the key args whose value is not an array or hash, eg `{args: "*"}`. It also matches things that are not strings, so something like `{args: WildCard.new}` would also work. Keep that in mind for later.
+
+Let's run tests again.
+
+```
+  2) Error:
+test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer):
+NameError: uninitialized constant SQLAwesome::Transformer::SelectQuery
+    /Users/nick/hacking/sql_workshop/lib/sql_awesome/transformer.rb:5:in `block in <class:Transformer>'
 ```
