@@ -200,6 +200,14 @@ digraph hello {
 
 # Wild Card Walking Skeleton
 
+Walking Skeleton
+
+> an implementation of the thinnest possible slice of real functionality that we can build, deploy and test end-to-end.
+-- GOOGbT
+
+For our SQL language, the thinnest possible query is a select star from a single table with no conditionals. In order to build that, we'll have to start the parser, the semantic model, the transformer that populates the semantic model and the basics of execution.
+
+
 Our first SQL query to implement is this one:
 
 `SELECT * FROM one_to_five`
@@ -270,6 +278,70 @@ The neat bit of the spec is
     result.must_equal db["one_to_five"]
 ```
 
-What we're saying here is that evaling our wildcard query is equivalent to looking at the table directly. As in, it's got all the rows and all the columns. Just like if you were to run a `*` query with no `WHERE` clause.
+What we're saying here is that evaling our wildcard query is equivalent to looking at the table directly. As in, it's got all the rows and all the columns. Just like if you were to run a `*` query with no `WHERE` clause. It's not an amazing test, but it'll serve to build our walking skeleton.
 
 Let's run our specs:
+
+```
+$ rake
+Run options: --seed 1845
+
+# Running tests:
+
+E.
+
+Finished tests in 0.021476s, 93.1272 tests/s, 139.6908 assertions/s.
+
+  1) Error:
+test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
+NoMethodError: private method `eval' called for #<SQLAwesome::RDBMS:0x007f9ea196c480>
+...
+2 tests, 3 assertions, 0 failures, 1 errors, 0 skips
+rake aborted!
+```
+
+Oops, I didn't write the `eval` method for the RDBMS! What should that look like? First, let's back up and talk architecture a little. Our little RDMS is going to need to be able to go through all the stages we talked about earlier. To do that, we'll need to split up some responsibilities.
+
+```
+digraph {
+  query_string -> parser[shape=rect];
+  parser -> tree;
+  tree -> transformer[shape=rect];
+  transformer -> semantic_model;
+  semantic_model -> execution[shape=rect];
+}
+```
+
+
+Let's drop some code in there to get started.
+
+```ruby
+  def eval query_string
+    intermediate_tree = Parser.new.parse program
+    model = Transformer.new.apply intermediate_tree
+    model.eval @tables
+  end
+```
+
+I've already setup classes for the Parser and Transformer in `lib/sql_awesome/`.
+
+Both of these are using Parslet's parser generator framework classes as superclasses.
+
+Let's see what happens now.
+
+```
+$ rake
+Run options: --seed 4422
+
+# Running tests:
+
+E.
+
+Finished tests in 0.017203s, 116.2588 tests/s, 174.3882 assertions/s.
+
+  1) Error:
+test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
+NameError: undefined local variable or method `root' for #<SQLAwesome::Parser:0x007f90e4944658>
+```
+
+That's an interesting error. Let's look at `lib/sql_awesome/parser.rb`
