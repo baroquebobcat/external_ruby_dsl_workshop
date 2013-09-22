@@ -1,5 +1,5 @@
 require 'parslet'
-require 'parslet_ext'
+require 'sql_awesome/parslet_ext'
 require 'sql_awesome/parser'
 require 'sql_awesome/semantic_model'
 require 'sql_awesome/transformer'
