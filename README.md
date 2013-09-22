@@ -16,3 +16,9 @@ It'll go like this
 
 First, we'll build a walking skeleton
 We'll build a tiny bit of the parser, the transformer and the semantic model
+
+
+Dependencies
+----------------
+* _Ruby_ of course
+* _Parslet_ a PEG parser combinator toolkit
