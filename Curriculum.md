@@ -347,3 +347,108 @@ NameError: undefined local variable or method `root' for #<SQLAwesome::Parser:0x
 ```
 
 That's an interesting error. Let's look at `lib/sql_awesome/parser.rb`
+
+```ruby
+module SQLAwesome
+  # The Parser takes a string and turns it into an intermediate representation.
+  # This representation can be used to populate the Semantic Model.
+  class Parser < Parslet::Parser
+    # root :statement
+
+    # handy list pattern x.repeat(1,1) > (y >> x).repeat
+
+    rule(:ident) { match('[a-zA-Z]') >> match('\w').repeat }
+    rule(:space)      { match('\s').repeat(1) }
+    rule(:space?)     { space.maybe }
+
+    rule(:integer)    { match('[0-9]').repeat(1).as(:integer) }
+
+    rule(:comma)      { str(',') >> space? }
+  end
+end
+```
+
+The reason it is complaining is because we need to define a root rule.
+
+Parslet is an internal DSL for describing PEGs. Parser Expression Grammars. I've included some handy rules we'll use as building blocks.
+
+Let's try uncommenting `# root :statement` and see what happens.
+
+```
+$ rake
+Run options: --seed 41503
+
+# Running tests:
+
+E.
+
+Finished tests in 0.016246s, 123.1072 tests/s, 184.6608 assertions/s.
+
+  1) Error:
+test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
+NoMethodError: undefined method `statement' for #<SQLAwesome::Parser:0x007f9ce407c618>
+```
+
+We haven't defined a rule for statements yet, so it blows up. Before we do that, let's write a test that shows what the input / output for the kind of statement we're building should look like.
+
+Open up `spec/parser_spec.rb` and we'll write our first parser spec.
+
+```ruby
+it "converts a wildcard statement with no where into an intermediate tree" do
+  tree = SQLAwesome::Parser.new.parse "SELECT * FROM a"
+  tree.must_equal args: "*", from: "a"
+end
+```
+
+Remember the tree diagram from before?
+
+`Tree Diagram goes here`
+
+> do we want parsing to be case-insensitive wrt keywords?
+
+Now we have a new failing test
+
+```
+  2) Error:
+test_0001_converts a wildcard statement with no where into an intermediate tree(SQLAwesome::Parser):
+NoMethodError: undefined method `statement' for #<SQLAwesome::Parser:0x007f83cb089c00>
+```
+
+Let's make that one pass. In parser.rb, add this rule:
+
+```ruby
+    rule(:statement) { str("SELECT") >> space? >>
+                       str("*").as(:args) >> space? >>
+                       str("FROM") >> space? >> ident.as(:from)
+                     }
+```
+
+That probably looks a little complicated, so let's break it down a little.
+
+Parslet parsers are defined in terms of rules. You define a new rule by calling `rule` with a name and a block containing the grammar snippet that it matches. Rules are available in blocks as instance variables, which makes it easy to refer to them from other rules.
+
+What this rule is doing is:
+
+ 1. `str("SELECT")` looking for the string `SELECT`
+ 2. `>> space?` This refers to the `space?` rule that was already written. It matches space characters or nothing.
+ 3. `str("*")` looks for the string `*`
+
+ Parslet provides a number of small parsers or parslets that you combine to build a full parser. For example `str` is a helper method that actually creates an instance of a class that only recognizes strings.
+
+ ```ruby
+  def str(str)
+    Atoms::Str.new(str)
+  end
+ ```
+ [str impl](https://github.com/kschiess/parslet/blob/142f33bb147edede1753de7fc0ea066e07f565fb/lib/parslet.rb#L155-L157)
+
+
+Parslet isn't the only way to build grammars for external DSLs in Ruby. It's just nice because as an internal DSL it doesn't have a separate compile step.
+
+After adding the new code, the parser test is passing, and we're back to having a failing acceptance test. But, the error has changed.
+
+```
+  1) Error:
+test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
+NoMethodError: private method `eval' called for {:args=>"*"@7, :from=>"one_to_five"@14}:Hash
+```

@@ -2,7 +2,12 @@ module SQLAwesome
   # The Parser takes a string and turns it into an intermediate representation.
   # This representation can be used to populate the Semantic Model.
   class Parser < Parslet::Parser
-    # root :statement
+    root :statement
+
+    rule(:statement) { str("SELECT") >> space? >>
+                       str("*").as(:args) >> space? >>
+                       str("FROM") >> space? >> ident.as(:from)
+                     }
 
     # handy list pattern x.repeat(1,1) > (y >> x).repeat
 
