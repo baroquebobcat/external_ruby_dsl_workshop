@@ -16,10 +16,4 @@ module SQLAwesome
     end
     RDBMS.new tables
   end
-
-  def self.eval program, database={}
-    raw_ast = Parser.new.parse program
-    model = Transformer.new.apply raw_ast
-    model.eval database
-  end
 end
