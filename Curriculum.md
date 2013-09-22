@@ -197,6 +197,7 @@ digraph hello {
            `//`             `\\`
 ```
 [source](http://www.retrojunkie.com/asciiart/health/skeleton.htm)
+
 # Wild Card Walking Skeleton
 
 Our first SQL query to implement is this one:
@@ -269,4 +270,6 @@ The neat bit of the spec is
     result.must_equal db["one_to_five"]
 ```
 
-What we're saying here is that evaling our wildcard query is equivalent to looking at the table directly.
+What we're saying here is that evaling our wildcard query is equivalent to looking at the table directly. As in, it's got all the rows and all the columns. Just like if you were to run a `*` query with no `WHERE` clause.
+
+Let's run our specs:
