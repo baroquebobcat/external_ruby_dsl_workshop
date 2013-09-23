@@ -676,3 +676,18 @@ For now, the easiest way to ensure it works is to call `to_s` on the strings in 
 ```ruby
 SemanticModel::SelectQuery.new(SemanticModel::WildCard.new, table_name.to_s)
 ```
+
+Now everything's passing and we've got our walking skeleton.
+
+```
+$ rake
+Run options: --seed 17061
+
+# Running tests:
+
+.......
+
+Finished tests in 0.021596s, 324.1341 tests/s, 416.7438 assertions/s.
+
+7 tests, 9 assertions, 0 failures, 0 errors, 0 skips
+```
