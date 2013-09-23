@@ -7,5 +7,6 @@ module SQLAwesome
            SemanticModel::SelectQuery.new(args, table_name.to_s)
          }
     rule(wildcard: simple(:asterisk)) { SemanticModel::WildCard.new }
+    rule(field: simple(:field_name)) { SemanticModel::Field.new field_name.to_s }
   end
 end

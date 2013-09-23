@@ -19,6 +19,18 @@ describe SQLAwesome::SemanticModel do
     it "has an inspect that says it shows all fields" do
       WildCard.new.inspect.must_equal "Fields:all"
     end
+    
+    it "passes back the row as is when asked to filter" do
+      wildcard = WildCard.new
+      original = {"a"=>1,"b"=>2}
+      result = wildcard.filter original
+      result.must_equal original
+    end
   end
-
+  describe Field do
+    it "has an inspect method that shows its field" do
+      field = Field.new "myfield"
+      field.inspect.must_equal "Fields:[myfield]"
+    end
+  end
 end

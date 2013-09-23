@@ -4,7 +4,7 @@ module SQLAwesome
   module SemanticModel
     class SelectQuery < Struct.new(:args, :from_table)
       def eval database
-        database[from_table]
+        database[from_table].map{|row| args.filter(row) }
       end
 
       def inspect
@@ -12,8 +12,17 @@ module SQLAwesome
       end
     end
     class WildCard
+      def filter row
+        row
+      end
+
       def inspect
         "Fields:all"
+      end
+    end
+    class Field < Struct.new(:name)
+      def inspect
+        "Fields:[#{name}]"
       end
     end
   end

@@ -869,3 +869,115 @@ And, bam! Our error message changed, as expected, in the same way it did for the
 test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome):
 NoMethodError: private method `eval' called for {:args=>{:field=>"eng"@7}, :from=>"one_to_five"@16}:Hash
 ```
+
+This means that the transformer didn't do it's job because it couldn't recognize the new intermediate tree.
+
+So, let's fix that up.
+Test:
+```ruby
+  it "converts {args:{field:'b'}, from:'a'} into a single field query object" do
+    result = SQLAwesome::Transformer.new.apply args: {field:'b'}, from:'a'
+
+    result.inspect.must_equal "Query: Fields:[b] FromTable:a"
+  end
+```
+
+```
+  2) Failure:
+test_0002_converts {args:{field:'b'}, from:'a'} into a single field query object(SQLAwesome::Transformer) [sql_workshop/spec/transformer_spec.rb:14]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-"Query: Fields:[b] FromTable:a"
++"{:args=>{:field=>\"b\"}, :from=>\"a\"}"
+```
+
+Implementation
+```ruby
+rule(field: simple(:field_name)) { SemanticModel::Field.new field_name.to_s }
+```
+It works the same as the wildcard transformation, only we want to pass that into the object we are constructing. And this time, we'll remember to `to_s` it.
+
+> There may be times when you want to delay `to_s` when using parslet because you can use the Slice's metadata to your advantage when reporting errors.
+
+That gets us our familiar const error.
+```
+  2) Error:
+test_0002_converts {args:{field:'b'}, from:'a'} into a single field query object(SQLAwesome::Transformer):
+NameError: uninitialized constant SQLAwesome::SemanticModel::Field
+```
+
+So, we go and start a new `describe` block in the `semantic_model_spec.rb`
+
+```ruby
+describe Field do
+  it "has an inspect method that shows its field" do
+    field = Field.new "myfield"
+    field.inspect.must_equal "Fields:[myfield]"
+  end
+end
+```
+
+Then we go through the constant not found, define class, inspect uses default, redefine it dance to end up at this implementation.
+
+```ruby
+class Field < Struct.new(:name)
+  def inspect
+    "Fields:[#{name}]"
+  end
+end
+```
+
+And now we're back to the acceptance test, but with a new and interesting error.
+
+```
+  1) Failure:
+test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome) [sql_workshop/spec/sql_awesome_spec.rb:16]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-[{"eng"=>"one"}, {"eng"=>"two"}, {"eng"=>"three"}, {"eng"=>"four"}, {"eng"=>"five"}]
++[#<CSV::Row "dec":"1" "eng":"one">, #<CSV::Row "dec":"2" "eng":"two">, #<CSV::Row "dec":"3" "eng":"three">, #<CSV::Row "dec":"4" "eng":"four">, #<CSV::Row "dec":"5" "eng":"five">]
+```
+
+Back when we implemented the wildcard before, we just passed the table's values through without filter. But, what we really want is to have the SELECT's args determine what is passed through from each row. Let's change that for SelectQuery and WildCard, and then go back and finish this out.
+
+SelectQuery doesn't need any test changes to support this, but currently WildCard has no notion about it, so let's write a test.
+
+```ruby
+  describe WildCard do
+    # ...
+    it "passes back the row as is when asked to filter" do
+      wildcard = WildCard.new
+      original = {"a"=>1,"b"=>2}
+      result = wildcard.filter original
+      result.must_equal original
+    end
+```
+
+This results in a `NoMethodError` as expected. Let's implement it.
+
+```ruby
+  def filter row
+    row
+  end
+```
+
+And we're back to our failing acceptance test. But we're not done with the refactor. Now we can change SelectQuery to map all the rows of the table through the filter method and no new tests should break!
+
+```ruby
+class SelectQuery
+  def eval database
+    database[from_table].map{|row| args.filter(row) }
+  end
+```
+
+Now our in-progress acceptance test is complaining in a new way that tells us what to do next.
+```
+  1) Error:
+test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome):
+NoMethodError: undefined method `filter' for Fields:[eng]:SQLAwesome::SemanticModel::Field
+```
+
+
+
