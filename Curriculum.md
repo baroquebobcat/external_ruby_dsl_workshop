@@ -978,6 +978,34 @@ Now our in-progress acceptance test is complaining in a new way that tells us wh
 test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome):
 NoMethodError: undefined method `filter' for Fields:[eng]:SQLAwesome::SemanticModel::Field
 ```
+Let's add the filter method to Field. First the test:
+```ruby
+  it "should filter out all but it's field" do
+    field = Field.new "a"
+    original = {"a" => 1,"b" => 2}
+    result = field.filter original
+    result.must_equal "a" => 1
+  end
+```
 
+Implementation
 
+```ruby
+  def filter row
+    {name => row[name]}
+  end
+```
 
+Bam!
+```
+$ rake
+Run options: --seed 28160
+
+# Running tests:
+
+.............
+
+Finished tests in 0.021960s, 591.9854 tests/s, 683.0601 assertions/s.
+
+13 tests, 15 assertions, 0 failures, 0 errors, 0 skips
+```

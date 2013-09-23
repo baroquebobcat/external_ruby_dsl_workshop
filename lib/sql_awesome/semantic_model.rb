@@ -20,7 +20,12 @@ module SQLAwesome
         "Fields:all"
       end
     end
+    
     class Field < Struct.new(:name)
+      def filter row
+        {name => row[name]}
+      end
+      
       def inspect
         "Fields:[#{name}]"
       end
