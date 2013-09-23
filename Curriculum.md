@@ -95,7 +95,20 @@ DSLs can also be a communication tool with non-technical stakeholders. When you 
 
 External DSLs are especially good for this because they don't carry any extra features / syntax from another language.
 
+DSLs allow you to represent different models of computation than your host language. The most popular languages today are imperative ones but sometimes the best way to describe a computation is not with an imperative model.
+
+E.g. State Machines. State Machines in an imperative language show up as big blocks of if statements or case statements, which don't represent very well what you are actually modeling. State machines are all about transitions and states, not ifs or cases. With a DSL you can model those relationships more effectively.
+
+Another common pattern are Production Rule Systems. An example in Ruby / Rails would be ActiveRecord's validations. It would be super annoying to write imperative code equivalent to `validates :age, inclusion: { in: 0..9 }`. With the validation DSL, you don't have to.
+
 ## When would you want to avoid using a DSL
+
+* DSLs are great when you have lots of code you need to write that's going to all look almost the same, but with some fiddly differences. Smaller domains probably don't need it as much.
+* Writing parsers and interpreters isn't intrisicly hard, but it requires a certain meta point of view and if you aren't used to building them it takes a bit to put your head around them.
+* DSLs add another thing to learn to a project. Learning a new language on top of groking a whole project could be challenging to new people. On the other hand, DSLs can more susinctly describe a problem domain, _and_ the domain is what is complicated.
+* Maintenance: When you write a DSL, if it gets used a lot, you will have to maintain it. That means dealing with versioning, deprecation, etc--everything a language designer deals with.
+
+
 
 -------------------------------------------------
 
