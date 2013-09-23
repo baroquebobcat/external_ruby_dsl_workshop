@@ -816,7 +816,7 @@ That causes the parser tests to pass, but breaks our previous integration test, 
 
 Test first:
 ```ruby
-  it "converts {args:'*', from:'a'} into a wild card query object" do
+  it "converts {args:{wildcard:'*'}, from:'a'} into a wild card query object" do
     result = SQLAwesome::Transformer.new.apply args: {wildcard:'*'}, from:'a'
 
     result.inspect.must_equal "Query: Fields:all FromTable:a"
