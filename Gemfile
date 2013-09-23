@@ -13,6 +13,9 @@ gem "middleman-livereload", "~> 3.1.0"
 gem "middleman-gh-pages", :git => 'https://github.com/baroquebobcat/middleman-gh-pages.git',
                           :require => false
 
+gem "middleman-syntax"
+gem "redcarpet"
+
 # For faster file watcher updates on Windows:
 gem "wdm", "~> 0.1.0", :platforms => [:mswin, :mingw]
 

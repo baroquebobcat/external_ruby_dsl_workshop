@@ -71,18 +71,25 @@ end
 Since we're building a SQL implementation, I thought I'd also show some examples for representing equivalent computations with it.
 
 SQL
+
 ```sql
 select name, age from persons where favorite_food = 'bananas' limit 10
 ```
+
 Ruby
+
 ```ruby
 tables["persons"].select{|p|p["favorite_food"]=="bananas"}.map{|p| {name: p["name"], age: p["age"]}.first 10
 ```
+
 Rails
+
 ```ruby
 Person.where(favorite_food: 'bananas').select(:name, :age).limit(10)
 ```
+
 Java
+
 ```java
 // don't even get me started
 ```
@@ -117,7 +124,9 @@ Convert to slides
 -----------------
 
 # one plus one
+
 (0) `1 + 2`
+
 (1) 
 
 digraph hello {
@@ -223,7 +232,9 @@ For our SQL language, the thinnest possible query is a select star from a single
 
 Our first SQL query to implement is this one:
 
-`SELECT * FROM one_to_five`
+```sql
+SELECT * FROM one_to_five
+```
 
 Through it, we'll build a small part of all the needed pieces of our interpreter.
 
@@ -231,13 +242,16 @@ Through it, we'll build a small part of all the needed pieces of our interpreter
 It's transitions
 
  0. `SELECT * FROM one_to_five`
+
  1.
+
 ```
 digraph wildcard_0 {
   query -> from_table;
   from_table[shape="record"; label="FROM|one_to_five"]
 }
 ```
+
 We could build a tree like this, but I'm anticipating that we'll likely want to have different behavior for other SELECT args in the future. So, we'll make one that looks more like this:
 
 ```
@@ -250,7 +264,9 @@ digraph wildcard_0 {
 
  2. `SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))`
 
- 3. ```ruby
+ 3. 
+
+```ruby
 [{"dec"=>1,"eng"=>"one"},
     #... 
    ]
@@ -293,6 +309,7 @@ Some of this I wrote already to simplify things
 builds a `RDBMS` object with tables populated from the passed directory. It's specs are in `spec/rdbms_spec.rb` if you're interested.
 
 The neat bit of the spec is
+
 ```ruby
     result = db.eval "SELECT * FROM one_to_five"
     result.must_equal db["one_to_five"]
@@ -458,6 +475,7 @@ What this rule is doing is:
     Atoms::Str.new(str)
   end
  ```
+
  [str impl](https://github.com/kschiess/parslet/blob/142f33bb147edede1753de7fc0ea066e07f565fb/lib/parslet.rb#L155-L157)
 
 
@@ -548,6 +566,7 @@ NameError: uninitialized constant SQLAwesome::SemanticModel::SelectQuery
 Our semantic model classes don't exist yet! What should we do? Write more tests of course. To start, we'll just write enough to make the Transformer happy.
 
 In `spec/semantic_model_spec.rb`
+
 ```ruby
 describe SelectQuery do
   it "has a nice inspect format" do
@@ -574,7 +593,6 @@ end
 ```
 
 ```
-
   2) Failure:
 test_0001_has a nice inspect format(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [sql_workshop/spec/semantic_model_spec.rb:9]:
 --- expected
@@ -593,6 +611,7 @@ Let's add a better `inspect`.
 ```
 
 Bam! now that test passes. But the transformer is still unhappy:
+
 ```
   2) Error:
 test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer):
@@ -610,6 +629,7 @@ Let's add it, but first a test.
 ```
 
 Failure on const after running `rake`:
+
 ```
 sql_workshop/spec/semantic_model_spec.rb:12:in `block in <top (required)>': uninitialized constant WildCard (NameError)
 ```
@@ -662,16 +682,20 @@ Now the problem is that we are calling eval on a SelectQuery object. Isn't that 
 ```
 
 Tests fail, as expected.
+
 ```
   2) Error:
 test_0002_gives you back all the things in the table when args is a wild card(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery):
 NoMethodError: private method `eval' called for Query: Fields:all FromTable:a:SQLAwesome::SemanticModel::SelectQuery
 ```
+
 Add the missing method:
+
 ```ruby
 def eval database
 end
 ```
+
 ```
   2) Failure:
 test_0002_gives you back all the things in the table when args is a wild card(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [sql_workshop/spec/semantic_model_spec.rb:15]:
@@ -723,8 +747,9 @@ SELECT eng FROM one_to_five
 
 For this one we're going to modify our tree to make it able to represent both wild card and single field arguments. To do this we'll change the `args` subtree to let it support different types of things below it.
 
-0. `SELECT eng FROM one_to_five`
+ 0. `SELECT eng FROM one_to_five`
  1.
+
 ```
 digraph one_column {
   query -> from_table;
@@ -736,7 +761,9 @@ digraph one_column {
 
  2. `SelectQuery.new(Field.new("eng"), FromTable.new("one_to_five"))`
 
- 3. ```ruby
+ 3. 
+
+```ruby
 [{"eng"=>"one"},
     #... 
    ]
@@ -795,6 +822,7 @@ digraph one_column {
 We could leave it and create a new grammar rule that's separate, but I don't think it's as neat.
 
 So our old test becomes:
+
 ```ruby
   it "converts a wildcard statement with no where into an intermediate tree" do
     tree = SQLAwesome::Parser.new.parse "SELECT * FROM a"
@@ -803,6 +831,7 @@ So our old test becomes:
 ```
 
 Which fails understandably.
+
 ```
   2) Failure:
 test_0001_converts a wildcard statement with no where into an intermediate tree(SQLAwesome::Parser) [sql_workshop/spec/parser_spec.rb:7]:
@@ -828,6 +857,7 @@ What I'm doing here is expanding the grammar to treat args as it's own rule. Rig
 That causes the parser tests to pass, but breaks our previous integration test, because the transformer doesn't know about the new structure. Let's fix it.
 
 Test first:
+
 ```ruby
   it "converts {args:{wildcard:'*'}, from:'a'} into a wild card query object" do
     result = SQLAwesome::Transformer.new.apply args: {wildcard:'*'}, from:'a'
@@ -835,7 +865,9 @@ Test first:
     result.inspect.must_equal "Query: Fields:all FromTable:a"
   end
 ```
+
 Expected Failure:
+
 ```
   3) Failure:
 test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [sql_workshop/spec/transformer_spec.rb:8]:
@@ -847,6 +879,7 @@ test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome
 ```
 
 Now for the implementation. Here we're creating a new rule specifically for wildcards. This will make it easy to drop in the field support next.
+
 ```ruby
 rule(args: simple(:args),
      from: simple(:table_name)) { 
@@ -873,6 +906,7 @@ All we have to do is add an OR to the new `args` rule we extracted in the last s
 ```ruby
     rule(:args) { ident.as(:field) | str("*").as(:wildcard)}
 ```
+
 In parslet, the `|` operator is overridden to construct a parser that accepts either the right side or left side. Here we make the args rule accept either an ident, in which case we call it field, or an asterisk, in which case we call it wildcard.
 
 And, bam! Our error message changed, as expected, in the same way it did for the first task.
@@ -887,6 +921,7 @@ This means that the transformer didn't do it's job because it couldn't recognize
 
 So, let's fix that up.
 Test:
+
 ```ruby
   it "converts {args:{field:'b'}, from:'a'} into a single field query object" do
     result = SQLAwesome::Transformer.new.apply args: {field:'b'}, from:'a'
@@ -906,14 +941,17 @@ test_0002_converts {args:{field:'b'}, from:'a'} into a single field query object
 ```
 
 Implementation
+
 ```ruby
 rule(field: simple(:field_name)) { SemanticModel::Field.new field_name.to_s }
 ```
+
 It works the same as the wildcard transformation, only we want to pass that into the object we are constructing. And this time, we'll remember to `to_s` it.
 
 > There may be times when you want to delay `to_s` when using parslet because you can use the Slice's metadata to your advantage when reporting errors.
 
 That gets us our familiar const error.
+
 ```
   2) Error:
 test_0002_converts {args:{field:'b'}, from:'a'} into a single field query object(SQLAwesome::Transformer):
@@ -986,12 +1024,15 @@ class SelectQuery
 ```
 
 Now our in-progress acceptance test is complaining in a new way that tells us what to do next.
+
 ```
   1) Error:
 test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome):
 NoMethodError: undefined method `filter' for Fields:[eng]:SQLAwesome::SemanticModel::Field
 ```
+
 Let's add the filter method to Field. First the test:
+
 ```ruby
   it "should filter out all but it's field" do
     field = Field.new "a"
@@ -1010,6 +1051,7 @@ Implementation
 ```
 
 Bam!
+
 ```
 $ rake
 Run options: --seed 28160
