@@ -491,7 +491,7 @@ Let's run tests again:
 
 ```
   2) Failure:
-test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [/Users/nick/hacking/sql_workshop/spec/transformer_spec.rb:8]:
+test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [sql_workshop/spec/transformer_spec.rb:8]:
 --- expected
 +++ actual
 @@ -1 +1 @@
@@ -529,7 +529,7 @@ Let's run tests again.
   2) Error:
 test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer):
 NameError: uninitialized constant SQLAwesome::SemanticModel::SelectQuery
-    /Users/nick/hacking/sql_workshop/lib/sql_awesome/transformer.rb:5:in `block in <class:Transformer>'
+    sql_workshop/lib/sql_awesome/transformer.rb:5:in `block in <class:Transformer>'
 ```
 
 Our semantic model classes don't exist yet! What should we do? Write more tests of course. To start, we'll just write enough to make the Transformer happy.
@@ -563,7 +563,7 @@ end
 ```
 
   2) Failure:
-test_0001_has a nice inspect format(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [/Users/nick/hacking/sql_workshop/spec/semantic_model_spec.rb:9]:
+test_0001_has a nice inspect format(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [sql_workshop/spec/semantic_model_spec.rb:9]:
 --- expected
 +++ actual
 @@ -1 +1 @@
@@ -612,7 +612,7 @@ Now it's failing properly:
 
 ```
   2) Failure:
-test_0001_has an inspect that says it shows all fields(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::WildCard) [/Users/nick/hacking/sql_workshop/spec/semantic_model_spec.rb:14]:
+test_0001_has an inspect that says it shows all fields(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::WildCard) [sql_workshop/spec/semantic_model_spec.rb:14]:
 --- expected
 +++ actual
 @@ -1 +1 @@
@@ -634,7 +634,7 @@ And we're back to one failing test, our acceptance test.
   1) Error:
 test_0001_retrieves all columns for all rows with a wildcard(SQLAwesome):
 NoMethodError: private method `eval' called for Query: Fields:all FromTable:one_to_five:SQLAwesome::SemanticModel::SelectQuery
-    /Users/nick/hacking/sql_workshop/lib/sql_awesome/rdbms.rb:13:in `eval'
+    sql_workshop/lib/sql_awesome/rdbms.rb:13:in `eval'
 ```
 
 Now the problem is that we are calling eval on a SelectQuery object. Isn't that cool. It looks like all that's left is to add tests, and a method.
@@ -661,7 +661,7 @@ end
 ```
 ```
   2) Failure:
-test_0002_gives you back all the things in the table when args is a wild card(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [/Users/nick/hacking/sql_workshop/spec/semantic_model_spec.rb:15]:
+test_0002_gives you back all the things in the table when args is a wild card(SQLAwesome::SemanticModel::SQLAwesome::SemanticModel::SelectQuery) [sql_workshop/spec/semantic_model_spec.rb:15]:
 Expected: [{"x"=>1}]
   Actual: nil
 ```
@@ -792,7 +792,7 @@ So our old test becomes:
 Which fails understandably.
 ```
   2) Failure:
-test_0001_converts a wildcard statement with no where into an intermediate tree(SQLAwesome::Parser) [/Users/nick/hacking/sql_workshop/spec/parser_spec.rb:7]:
+test_0001_converts a wildcard statement with no where into an intermediate tree(SQLAwesome::Parser) [sql_workshop/spec/parser_spec.rb:7]:
 --- expected
 +++ actual
 @@ -1 +1 @@
@@ -825,7 +825,7 @@ Test first:
 Expected Failure:
 ```
   3) Failure:
-test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [/Users/nick/hacking/sql_workshop/spec/transformer_spec.rb:8]:
+test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [sql_workshop/spec/transformer_spec.rb:8]:
 --- expected
 +++ actual
 @@ -1 +1 @@
