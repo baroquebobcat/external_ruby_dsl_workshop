@@ -54,6 +54,8 @@ set :images_dir, 'images'
 set :markdown_engine, :redcarpet
 set :markdown, :fenced_code_blocks => true, :smartypants => true
 
+activate :directory_indexes
+
 activate :syntax, :line_numbers => true
 
 # Build-specific configuration
@@ -70,7 +72,7 @@ configure :build do
 
   activate :relative_assets
   set :relative_links, true
-  
+
   # Or use a different image path
   # set :http_prefix, "/Content/images/"
 end

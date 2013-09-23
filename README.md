@@ -1,6 +1,8 @@
 SQL Interpreter Workshop
 =========================
 
+Curriculum is on [external-dsl-ruby.baroquebobcat.com](http://external-dsl-ruby.baroquebobcat.com/)
+
 Writing a SQL interpreter in Ruby, driven by tests.
 
 We'll be doing this iteratively
