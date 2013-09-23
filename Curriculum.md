@@ -1009,3 +1009,33 @@ Finished tests in 0.021960s, 591.9854 tests/s, 683.0601 assertions/s.
 
 13 tests, 15 assertions, 0 failures, 0 errors, 0 skips
 ```
+
+
+# Multiple Fields
+`SELECT year, name FROM hats`
+SelectQuery.new Fields.new(["year", "name"]), From.new("hats")
+
+# Single Element Where clauses
+## Numeric Equality
+SELECT * FROM one_to_five WHERE dec = 1
+SelectQuery.new(WildCard.new,
+                From.new("one_to_five"),
+                Where.new(
+                  NumericEquality.new("dec", 1)))
+## String Equality
+SELECT * FROM one_to_five WHERE eng = "one"
+SelectQuery.new(WildCard.new,
+                From.new("one_to_five"),
+                Where.new(
+                  StringEquality.new("eng", "one")))
+
+Where to go from here:
+ * Language Features
+   * Compound Where clauses (AND and OR).
+   * Functions (COUNT(*))
+   * Aliases (SELECT name AS real_name)
+   * Joins
+   * Indices / Query Planning
+ * Tooling
+   * Better Error Messages for parsing / missing tables/columns.
+   * Syntax highlighting.
