@@ -5,9 +5,10 @@ module SQLAwesome
     root :statement
 
     rule(:statement) { str("SELECT") >> space? >>
-                       str("*").as(:args) >> space? >>
+                       args.as(:args) >> space? >>
                        str("FROM") >> space? >> ident.as(:from)
                      }
+    rule(:args) { str("*").as(:wildcard)}
 
     # handy list pattern x.repeat(1,1) > (y >> x).repeat
 

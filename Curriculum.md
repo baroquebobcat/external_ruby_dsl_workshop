@@ -243,6 +243,11 @@ digraph wildcard_0 {
    ]
 ```
 
+End slides
+------------------------
+
+
+
 ## First Step of the Skeleton: Acceptance spec.
 
 Open up `spec/sql_awesome_spec.rb`.
@@ -677,8 +682,6 @@ For now, the easiest way to ensure it works is to call `to_s` on the strings in 
 SemanticModel::SelectQuery.new(SemanticModel::WildCard.new, table_name.to_s)
 ```
 
-Now everything's passing and we've got our walking skeleton.
-
 ```
 $ rake
 Run options: --seed 17061
@@ -691,3 +694,154 @@ Finished tests in 0.021596s, 324.1341 tests/s, 416.7438 assertions/s.
 
 7 tests, 9 assertions, 0 failures, 0 errors, 0 skips
 ```
+
+Now everything's passing and we've got our walking skeleton. The walking skeleton was the trickiest bit because we didn't have any structure in place yet. Now that it's done things should go more easily.
+
+Next we'll start looking at filtering what fields we want to get out.
+
+
+# Selecting a Single Field
+
+The next feature we're planning on supporting is allowing users to specify what fields they want to pull out of a table.
+
+```
+SELECT eng FROM one_to_five
+```
+
+For this one we're going to modify our tree to make it able to represent both wild card and single field arguments. To do this we'll change the `args` subtree to let it support different types of things below it.
+
+0. `SELECT eng FROM one_to_five`
+ 1.
+```
+digraph one_column {
+  query -> from_table;
+  query -> args;
+  args -> field[shape="record"; label="field|eng"]
+  from_table[shape="record"; label="FROM|one_to_five"]
+}
+```
+
+ 2. `SelectQuery.new(Field.new("eng"), FromTable.new("one_to_five"))`
+
+ 3. ```ruby
+[{"eng"=>"one"},
+    #... 
+   ]
+```
+
+First, we'll put together the acceptance test.
+
+```ruby
+  it "retrieves one column for all rows when only that column is specified" do
+    db = SQLAwesome.new_from_csv_dir "#{File.dirname(__FILE__)}/../data/"
+
+    result = db.eval "SELECT eng FROM one_to_five"
+    result.must_equal [
+       {"eng" => "one"},
+       {"eng" => "two"},
+       {"eng" => "three"},
+       {"eng" => "four"},
+       {"eng" => "five"}
+    ]
+  end
+```
+
+Let's see what that gets us
+
+```
+$ rake
+Run options: --seed 42840
+
+# Running tests:
+
+.E......
+
+Finished tests in 0.021725s, 368.2394 tests/s, 414.2693 assertions/s.
+
+  1) Error:
+test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome):
+Parslet::ParseFailed: Failed to match sequence ('SELECT' SPACE? args:'*' SPACE? 'FROM' SPACE? from:IDENT) at line 1 char 8.
+```
+
+Failed to parse. As expected, since our current parser only works for `SELECT * FROM _` queries. That message is kind of ugly, we should fix it, but right now let's focus on getting selecting a column working.
+
+> TODO
+> * customize parse error handling to be nicer
+
+Let's begin with changing the existing wildcard parser test to reflect our different tree.
+
+```
+digraph one_column {
+  query -> from_table;
+  query -> args;
+  args -> field[shape="record"; label="wildcard|*"]
+  from_table[shape="record"; label="FROM|one_to_five"]
+}
+```
+
+We could leave it and create a new grammar rule that's separate, but I don't think it's as neat.
+
+So our old test becomes:
+```ruby
+  it "converts a wildcard statement with no where into an intermediate tree" do
+    tree = SQLAwesome::Parser.new.parse "SELECT * FROM a"
+    tree.must_equal args: {wildcard: "*"}, from: "a"
+  end
+```
+
+Which fails understandably.
+```
+  2) Failure:
+test_0001_converts a wildcard statement with no where into an intermediate tree(SQLAwesome::Parser) [/Users/nick/hacking/sql_workshop/spec/parser_spec.rb:7]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-{:args=>{:wildcard=>"*"}, :from=>"a"}
++{:args=>"*"@7, :from=>"a"@14}
+```
+
+We update the parser's rules.
+
+```ruby
+    rule(:statement) { str("SELECT") >> space? >>
+                       args.as(:args) >> space? >>
+                       str("FROM") >> space? >> ident.as(:from)
+                     }
+    rule(:args) { str("*").as(:wildcard)}
+```
+
+What I'm doing here is expanding the grammar to treat args as it's own rule. Right now it's kind of boring, just a wildcard, but it gives us a place to change the grammar.
+
+That causes the parser tests to pass, but breaks our previous integration test, because the transformer doesn't know about the new structure. Let's fix it.
+
+Test first:
+```ruby
+  it "converts {args:'*', from:'a'} into a wild card query object" do
+    result = SQLAwesome::Transformer.new.apply args: {wildcard:'*'}, from:'a'
+
+    result.inspect.must_equal "Query: Fields:all FromTable:a"
+  end
+```
+Expected Failure:
+```
+  3) Failure:
+test_0001_converts {args:'*', from:'a'} into a wild card query object(SQLAwesome::Transformer) [/Users/nick/hacking/sql_workshop/spec/transformer_spec.rb:8]:
+--- expected
++++ actual
+@@ -1 +1 @@
+-"Query: Fields:all FromTable:a"
++"{:args=>{:wildcard=>\"*\"}, :from=>\"a\"}"
+```
+
+Now for the implementation. Here we're creating a new rule specifically for wildcards. This will make it easy to drop in the field support next.
+```ruby
+rule(args: simple(:args),
+     from: simple(:table_name)) { 
+       SemanticModel::SelectQuery.new(args, table_name.to_s)
+     }
+rule(wildcard: simple(:asterisk)) { SemanticModel::WildCard.new }
+```
+
+Now we're back to one failing test. It's the one we're working on. I'd call that a good refactor.
+
+
