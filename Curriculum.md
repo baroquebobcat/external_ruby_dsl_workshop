@@ -844,4 +844,28 @@ rule(wildcard: simple(:asterisk)) { SemanticModel::WildCard.new }
 
 Now we're back to one failing test. It's the one we're working on. I'd call that a good refactor.
 
+Let's add a new parser test for the one field case.
 
+```ruby
+  it "converts a one field statement with no where into an intermediate tree" do
+    tree = SQLAwesome::Parser.new.parse "SELECT b FROM a"
+    tree.must_equal args: {field: "b"}, from: "a"
+  end
+```
+
+Run tests and we see our good old parse error. But, now there's an simple place to drop in support.
+
+All we have to do is add an OR to the new `args` rule we extracted in the last step.
+
+```ruby
+    rule(:args) { ident.as(:field) | str("*").as(:wildcard)}
+```
+In parslet, the `|` operator is overridden to construct a parser that accepts either the right side or left side. Here we make the args rule accept either an ident, in which case we call it field, or an asterisk, in which case we call it wildcard.
+
+And, bam! Our error message changed, as expected, in the same way it did for the first task.
+
+```
+  1) Error:
+test_0002_retrieves one column for all rows when only that column is specified(SQLAwesome):
+NoMethodError: private method `eval' called for {:args=>{:field=>"eng"@7}, :from=>"one_to_five"@16}:Hash
+```

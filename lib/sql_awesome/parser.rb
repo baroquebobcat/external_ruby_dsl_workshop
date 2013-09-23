@@ -8,7 +8,7 @@ module SQLAwesome
                        args.as(:args) >> space? >>
                        str("FROM") >> space? >> ident.as(:from)
                      }
-    rule(:args) { str("*").as(:wildcard)}
+    rule(:args) { ident.as(:field) | str("*").as(:wildcard)}
 
     # handy list pattern x.repeat(1,1) > (y >> x).repeat
 
