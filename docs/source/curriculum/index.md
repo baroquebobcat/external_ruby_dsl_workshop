@@ -1,6 +1,3 @@
----
-title: External DSLs In Ruby Using SQL: Curriculum
----
 External DSLs in Ruby
 ======================
 
@@ -119,59 +116,6 @@ Another common pattern are Production Rule Systems. An example in Ruby / Rails w
 * Maintenance: When you write a DSL, if it gets used a lot, you will have to maintain it. That means dealing with versioning, deprecation, etc--everything a language designer deals with.
 
 
-
--------------------------------------------------
-
-
-Convert to slides
------------------
-
-# one plus one
-
-(0) `1 + 2`
-
-(1) 
-
-digraph hello {
-  plus[label="+"];
-  plus -> 1;
-  plus -> 2;
-}
-(2) `Add.new Int.new("1"), Int.new("2")`
-(3) `#=> 3`
-
-# Hello World Transitions
-
-(0) -> (1) Tree Construction
-(1) -> (2) Transformation
-(2) -> (3) Evaluation
-
-# Tree Construction
-
-> In order to construct the tree, we need to write a grammar
-> a dumb grammar for this would be
-
-`int.as(:left) >> plus.as(:add) >> int.as(:right)`
-
-> which would leave us with
-
-`{left: "1", add: "+", right: "2"}`
-
-# Transform
-
-> We'd then need to transform that.
-> In parslet, that'd look like this:
-```ruby
-  rule(left: simple(:l),
-       add: simple(:op),
-       right: simple(:r)) { Add.new Int.new(l), Int.new(r) }
-```
-
-> `rule` takes a pattern that matches portions of the intermediate tree, & then runs the resulting block on that subtree.
-
-
-
-----------------------
 
 
 #Walking Skeleton
