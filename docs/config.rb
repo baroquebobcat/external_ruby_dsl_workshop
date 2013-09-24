@@ -81,7 +81,8 @@ module Haml::Filters::Graphviz
   include Haml::Filters::Base
 
   def render(text)
-  %Q[<script type="text/graphviz">#{text}</script>]
+    text.sub!(/(\A\s*(?:di)?graph[^{]+{\s*$)/, "\\1\n   bgcolor=\"transparent\"")
+    %Q[<script type="text/graphviz">#{text}</script>]
   end
 end
 
