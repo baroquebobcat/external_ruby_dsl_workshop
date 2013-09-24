@@ -9,11 +9,15 @@
     <!-- Use title if it's in the page YAML frontmatter -->
     <title><%= current_page.data.title || "The Middleman" %></title>
     
-    <%= stylesheet_link_tag "normalize", "all", "syntax_highlighting" %>
-    <%= javascript_include_tag  "all" %>
+    <%= stylesheet_link_tag "normalize", "all", "syntax_highlighting", "curriculum" %>
+    
   </head>
   
   <body class="<%= page_classes %>">
     <%= yield %>
+    <%= javascript_include_tag  "viz", "viz_helper" %>
+    <script type="text/javascript">
+      Vizzy();
+    </script>
   </body>
 </html>

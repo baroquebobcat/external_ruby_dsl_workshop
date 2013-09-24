@@ -1,6 +1,7 @@
 ---
 title: External DSLs In Ruby Using SQL: Curriculum
 ---
+
 External DSLs in Ruby
 ======================
 
@@ -18,7 +19,7 @@ Overview
 
  * Ask questions
  * Type along w/ me
- * Notes are on github.com/baroquebobcat/dsl_workshop
+ * Notes are on external-dsl-ruby.baroquebobcat.com
  * If you've got Q's after
    * twitter: @baroquebobcat
    * email: ndh@baroquebobcat.com
@@ -128,17 +129,25 @@ Convert to slides
 
 # one plus one
 
-(0) `1 + 2`
+```ruby
+1 + 2
+```
 
-(1) 
-
+<script type="text/graphviz">
 digraph hello {
   plus[label="+"];
   plus -> 1;
   plus -> 2;
 }
-(2) `Add.new Int.new("1"), Int.new("2")`
-(3) `#=> 3`
+</script>
+
+```ruby
+Add.new Int.new("1"), Int.new("2")
+```
+
+```ruby
+#=> 3
+```
 
 # Hello World Transitions
 
@@ -248,22 +257,23 @@ It's transitions
 
  1.
 
-```
+<script type="text/graphviz">
 digraph wildcard_0 {
   query -> from_table;
-  from_table[shape="record"; label="FROM|one_to_five"]
+  from_table[shape="record"; label="FROM|one_to_five"];
 }
-```
+</script>
 
 We could build a tree like this, but I'm anticipating that we'll likely want to have different behavior for other SELECT args in the future. So, we'll make one that looks more like this:
 
-```
+<script type="text/graphviz">
 digraph wildcard_0 {
   query -> from_table;
-  query -> args[shape="record"; label="args|*"]
-  from_table[shape="record"; label="FROM|one_to_five"]
+  query -> args;
+  args[shape="record"; label="args|*"];
+  from_table[shape="record"; label="FROM|one_to_five"];
 }
-```
+</script>
 
  2. `SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))`
 
@@ -342,15 +352,18 @@ rake aborted!
 
 Oops, I didn't write the `eval` method for the RDBMS! What should that look like? First, let's back up and talk architecture a little. Our little RDMS is going to need to be able to go through all the stages we talked about earlier. To do that, we'll need to split up some responsibilities.
 
-```
+<script type="text/graphviz">
 digraph {
-  query_string -> parser[shape=rect];
-  parser -> tree;
-  tree -> transformer[shape=rect];
-  transformer -> semantic_model;
-  semantic_model -> execution[shape=rect];
+  query_string   -> parser;
+  parser         -> tree;
+  tree           -> transformer;
+  transformer    -> semantic_model;
+  semantic_model -> execution;
+  parser[shape=rect];
+  transformer[shape=rect]
+  execution[shape=rect];
 }
-```
+</script>
 
 
 Let's drop some code in there to get started.
@@ -753,14 +766,15 @@ For this one we're going to modify our tree to make it able to represent both wi
  0. `SELECT eng FROM one_to_five`
  1.
 
-```
+<script type="text/graphviz">
 digraph one_column {
   query -> from_table;
   query -> args;
-  args -> field[shape="record"; label="field|eng"]
+  args -> field;
+  field[shape="record"; label="field|eng"];
   from_table[shape="record"; label="FROM|one_to_five"]
 }
-```
+</script>
 
  2. `SelectQuery.new(Field.new("eng"), FromTable.new("one_to_five"))`
 
@@ -813,14 +827,15 @@ Failed to parse. As expected, since our current parser only works for `SELECT * 
 
 Let's begin with changing the existing wildcard parser test to reflect our different tree.
 
-```
+<script type="text/graphviz">
 digraph one_column {
   query -> from_table;
   query -> args;
-  args -> field[shape="record"; label="wildcard|*"]
-  from_table[shape="record"; label="FROM|one_to_five"]
+  args -> field;
+  field[shape="record"; label="wildcard|*"];
+  from_table[shape="record"; label="FROM|one_to_five"];
 }
-```
+</script>
 
 We could leave it and create a new grammar rule that's separate, but I don't think it's as neat.
 

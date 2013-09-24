@@ -11,6 +11,7 @@ module SQLAwesome
         "Query: #{args.inspect} FromTable:#{from_table}"
       end
     end
+    
     class WildCard
       def filter row
         row
@@ -20,7 +21,7 @@ module SQLAwesome
         "Fields:all"
       end
     end
-    
+
     class Field < Struct.new(:name)
       def filter row
         {name => row[name]}
