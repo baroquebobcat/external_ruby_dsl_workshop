@@ -11,6 +11,7 @@ Schedule
  * 8:00 - 9:00: Overview of DSLs / what we're doing today
  * 9:00 - 9:10: break
  * 9:10 - 11:30: Curriculum
+ * 11:30 - 12:00: Questions
 
 Overview
 --------
@@ -125,15 +126,9 @@ Another common pattern are Production Rule Systems. An example in Ruby / Rails w
 * DSLs add another thing to learn to a project. Learning a new language on top of groking a whole project could be challenging to new people. On the other hand, DSLs can more susinctly describe a problem domain, _and_ the domain is what is complicated.
 * Maintenance: When you write a DSL, if it gets used a lot, you will have to maintain it. That means dealing with versioning, deprecation, etc--everything a language designer deals with.
 
+# What We're Doing.
 
-
--------------------------------------------------
-
-
-Convert to slides
------------------
-
-# one plus one
+## one plus one
 
 ```ruby
 1 + 2
@@ -163,7 +158,7 @@ Add.new Int.new("1"), Int.new("2")
 (2) -> (3) Evaluation
 ```
 
-# Tree Construction
+# Tree Construction (with Parslet)
 
 > In order to construct the tree, we need to write a grammar
 > a dumb grammar for this would be
@@ -182,6 +177,7 @@ int.as(:left) >> plus.as(:add) >> int.as(:right)
 
 > We'd then need to transform that.
 > In parslet, that'd look like this:
+
 ```ruby
   rule(left: simple(:l),
        add: simple(:op),
@@ -240,12 +236,14 @@ int.as(:left) >> plus.as(:add) >> int.as(:right)
 ```
 [source](http://www.retrojunkie.com/asciiart/health/skeleton.htm)
 
+#Break
+
 # Wild Card Walking Skeleton
 
 Walking Skeleton
 
 > an implementation of the thinnest possible slice of real functionality that we can build, deploy and test end-to-end.
--- GOOGbT
+-- GOOS,GbT
 
 For our SQL language, the thinnest possible query is a select star from a single table with no conditionals. In order to build that, we'll have to start the parser, the semantic model, the transformer that populates the semantic model and the basics of execution.
 
@@ -370,11 +368,11 @@ digraph {
 </script>
 
 
-Let's drop some code in there to get started.
+Let's drop some code in the RDBMS class to get started.
 
 ```ruby
   def eval query_string
-    intermediate_tree = Parser.new.parse program
+    intermediate_tree = Parser.new.parse query_string
     model = Transformer.new.apply intermediate_tree
     model.eval @tables
   end
@@ -413,19 +411,25 @@ module SQLAwesome
     # handy list pattern x.repeat(1,1) > (y >> x).repeat
 
     rule(:ident) { match('[a-zA-Z]') >> match('\w').repeat }
-    rule(:space)      { match('\s').repeat(1) }
-    rule(:space?)     { space.maybe }
+    rule(:space)  { match('\s').repeat(1) }
+    rule(:space?) { space.maybe }
 
-    rule(:integer)    { match('[0-9]').repeat(1).as(:integer) }
+    rule(:integer) { match('[0-9]').repeat(1).as(:integer) }
 
-    rule(:comma)      { str(',') >> space? }
+    rule(:comma)   { str(',') >> space? }
   end
 end
 ```
 
 The reason it is complaining is because we need to define a root rule.
 
-Parslet is an internal DSL for describing PEGs. Parser Expression Grammars. I've included some handy rules we'll use as building blocks.
+> Parslet is an internal DSL for describing PEGs. Parser Expression Grammars. I've included some handy rules we'll use as building blocks.
+> It's one of many different tools you can use to write External DSLs.
+>
+> Regexes are also valid, but SQL is just complicated enough to need a grammar.
+>
+> You can also use a parser generator that uses an External DSL to define
+> grammars. For example, [kpeg](https://github.com/evanphx/kpeg).
 
 Let's try uncommenting `# root :statement` and see what happens.
 
@@ -1140,3 +1144,9 @@ SelectQuery.new(WildCard.new,
  * Tooling
    * Better Error Messages for parsing / missing tables/columns.
    * Syntax highlighting.
+
+# Further Reading
+
+ * [Parslet Documentation](http://kschiess.github.io/parslet/documentation.html)
+ * Domain Specific Languages - Martin Fowler [martinfowler.com](http://martinfowler.com/books/dsl.html)
+ * Growing Object Oriented Software, Guided by Tests [amazon.com](http://www.amazon.com/Growing-Object-Oriented-Software-Guided-Tests/dp/0321503627)
