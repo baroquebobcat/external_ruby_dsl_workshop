@@ -15,7 +15,12 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <%= stylesheet_link_tag "normalize", "reveal", "theme/sky", "syntax_highlighting" %>
+    <%= stylesheet_link_tag "normalize",
+                            "reveal",
+                             "theme/sky", 
+                             "syntax_highlighting", 
+                             "fullscreen-img",
+                             "graphviz" %>
     
   </head>
   
@@ -40,17 +45,18 @@ Reveal.initialize({
 
         // Optional libraries used to extend on reveal.js
         dependencies: [
-          //{ src: 'javascript/lib/classList.js', condition: function() { return !document.body.classList; } },
-          //{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-          //{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-          //{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-          //{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
-          //{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
-          //{ src: 'javascripts/lib/fullscreen-img.js' },
+          { src: 'js/lib/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'js/lib/fullscreen-img.js' },
           // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
           //{ src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
         ]
       });
+      Vizzy();
     </script>
   </body>
 </html>
