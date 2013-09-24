@@ -1089,20 +1089,36 @@ Finished tests in 0.021960s, 591.9854 tests/s, 683.0601 assertions/s.
 SelectQuery.new Fields.new(["year", "name"]), From.new("hats")
 
 # Single Element Where clauses
+
 ## Numeric Equality
+
+```sql
 SELECT * FROM one_to_five WHERE dec = 1
+```
+
+```ruby
 SelectQuery.new(WildCard.new,
                 From.new("one_to_five"),
                 Where.new(
                   NumericEquality.new("dec", 1)))
+```
+
 ## String Equality
+
+```sql
 SELECT * FROM one_to_five WHERE eng = "one"
+```
+
+```ruby
 SelectQuery.new(WildCard.new,
                 From.new("one_to_five"),
                 Where.new(
                   StringEquality.new("eng", "one")))
+```
 
-Where to go from here:
+
+#Where to go from here:
+
  * Language Features
    * Compound Where clauses (AND and OR).
    * Functions (COUNT(*))

@@ -76,3 +76,12 @@ configure :build do
   # Or use a different image path
   # set :http_prefix, "/Content/images/"
 end
+
+module Haml::Filters::Graphviz
+  include Haml::Filters::Base
+
+  def render(text)
+  %Q[<script type="text/graphviz">#{text}</script>]
+  end
+end
+
