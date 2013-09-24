@@ -157,20 +157,26 @@ Add.new Int.new("1"), Int.new("2")
 
 # Hello World Transitions
 
+```
 (0) -> (1) Tree Construction
 (1) -> (2) Transformation
 (2) -> (3) Evaluation
+```
 
 # Tree Construction
 
 > In order to construct the tree, we need to write a grammar
 > a dumb grammar for this would be
 
-`int.as(:left) >> plus.as(:add) >> int.as(:right)`
+```ruby
+int.as(:left) >> plus.as(:add) >> int.as(:right)
+```
 
 > which would leave us with
 
-`{left: "1", add: "+", right: "2"}`
+```ruby
+{left: "1", add: "+", right: "2"}
+```
 
 # Transform
 
@@ -183,10 +189,6 @@ Add.new Int.new("1"), Int.new("2")
 ```
 
 > `rule` takes a pattern that matches portions of the intermediate tree, & then runs the resulting block on that subtree.
-
-
-
-----------------------
 
 
 #Walking Skeleton
@@ -259,9 +261,9 @@ Through it, we'll build a small part of all the needed pieces of our interpreter
 
 It's transitions
 
- 0. `SELECT * FROM one_to_five`
-
- 1.
+ ```sql
+ SELECT * FROM one_to_five
+ ```
 
 <script type="text/graphviz">
 digraph wildcard_0 {
@@ -281,19 +283,15 @@ digraph wildcard_0 {
 }
 </script>
 
- 2. `SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))`
-
- 3. 
+```ruby
+SelectQuery.new(WildCard.new, FromTable.new("one_to_five"))
+``` 
 
 ```ruby
 [{"dec"=>1,"eng"=>"one"},
     #... 
    ]
 ```
-
-End slides
-------------------------
-
 
 
 ## First Step of the Skeleton: Acceptance spec.
@@ -474,10 +472,10 @@ NoMethodError: undefined method `statement' for #<SQLAwesome::Parser:0x007f83cb0
 Let's make that one pass. In parser.rb, add this rule:
 
 ```ruby
-    rule(:statement) { str("SELECT") >> space? >>
-                       str("*").as(:args) >> space? >>
-                       str("FROM") >> space? >> ident.as(:from)
-                     }
+rule(:statement) { str("SELECT") >> space? >>
+                   str("*").as(:args) >> space? >>
+                   str("FROM") >> space? >> ident.as(:from)
+                 }
 ```
 
 That probably looks a little complicated, so let's break it down a little.
@@ -492,11 +490,11 @@ What this rule is doing is:
 
  Parslet provides a number of small parsers or parslets that you combine to build a full parser. For example `str` is a helper method that actually creates an instance of a class that only recognizes strings.
 
- ```ruby
-  def str(str)
-    Atoms::Str.new(str)
-  end
- ```
+```ruby
+def str(str)
+  Atoms::Str.new(str)
+end
+```
 
  [str impl](https://github.com/kschiess/parslet/blob/142f33bb147edede1753de7fc0ea066e07f565fb/lib/parslet.rb#L155-L157)
 
@@ -532,7 +530,8 @@ For our current tree, we only need one rule to transform into the right model cl
 
 ```ruby
 it "converts {args:'*', from:'a'} into a wild card query object" do
-  result = SQLAwesome::Transformer.new.apply args:'*', from:'a'
+  result = SQLAwesome::Transformer.new.apply args:'*',
+                                             from:'a'
 
   result.inspect.must_equal "Query: Fields:all FromTable:a"
 end
@@ -559,7 +558,9 @@ Here's the implementation:
 ```ruby
     rule(args: simple(:args),
          from: simple(:table_name)) { 
-           SemanticModel::SelectQuery.new(SemanticModel::WildCard.new, table_name)
+           SemanticModel::SelectQuery.new(
+             SemanticModel::WildCard.new,
+             table_name)
          }
 ```
 
@@ -1091,8 +1092,13 @@ Finished tests in 0.021960s, 591.9854 tests/s, 683.0601 assertions/s.
 
 
 # Multiple Fields
-`SELECT year, name FROM hats`
+```sql
+SELECT year, name FROM hats
+```
+
+```ruby
 SelectQuery.new Fields.new(["year", "name"]), From.new("hats")
+```
 
 # Single Element Where clauses
 
