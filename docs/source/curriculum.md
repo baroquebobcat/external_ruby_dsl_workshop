@@ -1,5 +1,5 @@
 ---
-title: External DSLs In Ruby Using SQL: Curriculum
+title: Curriculum
 ---
 
 External DSLs in Ruby
