@@ -25,6 +25,7 @@
 <li>8:00 - 9:00: Overview of DSLs / what we&rsquo;re doing today</li>
 <li>9:00 - 9:10: break</li>
 <li>9:10 - 11:30: Curriculum</li>
+<li>11:30 - 12:00: Questions</li>
 </ul>
 
 <h2>Overview</h2>
@@ -96,13 +97,19 @@ expressiveness focused on a particular domain.</p>
 <p>Since we&rsquo;re building a SQL implementation, I thought I&rsquo;d also show some examples for representing equivalent computations with it.</p>
 
 <p>SQL</p>
-<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="k">select</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span> <span class="k">from</span> <span class="n">persons</span> <span class="k">where</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span> <span class="k">limit</span> <span class="mi">10</span>
+<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">select</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
+<span class="k">from</span> <span class="n">persons</span>
+<span class="k">where</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
+<span class="k">limit</span> <span class="mi">10</span>
 </td></tr></tbody></table></pre>
 <p>Ruby</p>
-<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="n">tables</span><span class="o">[</span><span class="s2">&quot;persons&quot;</span><span class="o">]</span><span class="nf">.select</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;favorite_food&quot;</span><span class="o">]==</span><span class="s2">&quot;bananas&quot;</span><span class="p">}</span><span class="nf">.map</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="nb">p</span><span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">age: </span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;age&quot;</span><span class="o">]</span><span class="p">}</span><span class="nf">.first</span> <span class="mi">10</span>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="n">tables</span><span class="o">[</span><span class="s2">&quot;persons&quot;</span><span class="o">]</span><span class="nf">.select</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;favorite_food&quot;</span><span class="o">]==</span><span class="s2">&quot;bananas&quot;</span><span class="p">}</span><span class="o">.</span>
+                  <span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="nb">p</span><span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">age: </span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;age&quot;</span><span class="o">]</span><span class="p">}</span><span class="o">.</span>
+                  <span class="n">first</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </td></tr></tbody></table></pre>
 <p>Rails</p>
-<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="no">Person</span><span class="nf">.where</span><span class="p">(</span><span class="ss">favorite_food: </span><span class="s1">&#39;bananas&#39;</span><span class="p">)</span><span class="nf">.select</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="ss">:age</span><span class="p">)</span><span class="nf">.limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div></td><td class="code"><span class="no">Person</span><span class="nf">.where</span><span class="p">(</span><span class="ss">favorite_food: </span><span class="s1">&#39;bananas&#39;</span><span class="p">)</span><span class="o">.</span>
+       <span class="nb">select</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="ss">:age</span><span class="p">)</span><span class="nf">.limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </td></tr></tbody></table></pre>
 <p>Java</p>
 <pre class="highlight java"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="c1">// don&#39;t even get me started</span>
@@ -130,11 +137,9 @@ expressiveness focused on a particular domain.</p>
 <li>Maintenance: When you write a DSL, if it gets used a lot, you will have to maintain it. That means dealing with versioning, deprecation, etc&ndash;everything a language designer deals with.</li>
 </ul>
 
-<hr>
+<h1>What We&rsquo;re Doing.</h1>
 
-<h2>Convert to slides</h2>
-
-<h1>one plus one</h1>
+<h2>one plus one</h2>
 <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
 </td></tr></tbody></table></pre>
 <script type="text/graphviz">
@@ -148,41 +153,36 @@ digraph hello {
 </td></tr></tbody></table></pre><pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="c1">#=&gt; 3</span>
 </td></tr></tbody></table></pre>
 <h1>Hello World Transitions</h1>
-
-<p>(0) -> (1) Tree Construction
-(1) -> (2) Transformation
-(2) -> (3) Evaluation</p>
-
-<h1>Tree Construction</h1>
+<pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code">(0) -&gt; (1) Tree Construction
+(1) -&gt; (2) Transformation
+(2) -&gt; (3) Evaluation
+</td></tr></tbody></table></pre>
+<h1>Tree Construction (with Parslet)</h1>
 
 <blockquote>
 <p>In order to construct the tree, we need to write a grammar
 a dumb grammar for this would be</p>
 </blockquote>
-
-<p><code>int.as(:left) &gt;&gt; plus.as(:add) &gt;&gt; int.as(:right)</code></p>
-
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="n">int</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:left</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">plus</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:add</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">int</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:right</span><span class="p">)</span>
+</td></tr></tbody></table></pre>
 <blockquote>
 <p>which would leave us with</p>
 </blockquote>
-
-<p><code>{left: &quot;1&quot;, add: &quot;+&quot;, right: &quot;2&quot;}</code></p>
-
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="p">{</span><span class="ss">left: </span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="ss">add: </span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="ss">right: </span><span class="s2">&quot;2&quot;</span><span class="p">}</span>
+</td></tr></tbody></table></pre>
 <h1>Transform</h1>
 
 <blockquote>
 <p>We&rsquo;d then need to transform that.
-In parslet, that&rsquo;d look like this:
-<code>ruby
-  rule(left: simple(:l),
-       add: simple(:op),
-       right: simple(:r)) { Add.new Int.new(l), Int.new(r) }
-</code></p>
-
+In parslet, that&rsquo;d look like this:</p>
+</blockquote>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code">  <span class="n">rule</span><span class="p">(</span><span class="ss">left: </span><span class="n">simple</span><span class="p">(</span><span class="ss">:l</span><span class="p">),</span>
+       <span class="ss">add: </span><span class="n">simple</span><span class="p">(</span><span class="ss">:op</span><span class="p">),</span>
+       <span class="ss">right: </span><span class="n">simple</span><span class="p">(</span><span class="ss">:r</span><span class="p">))</span> <span class="p">{</span> <span class="no">Add</span><span class="nf">.new</span> <span class="no">Int</span><span class="nf">.new</span><span class="p">(</span><span class="n">l</span><span class="p">),</span> <span class="no">Int</span><span class="nf">.new</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">}</span>
+</td></tr></tbody></table></pre>
+<blockquote>
 <p><code>rule</code> takes a pattern that matches portions of the intermediate tree, &amp; then runs the resulting block on that subtree.</p>
 </blockquote>
-
-<hr>
 
 <h1>Walking Skeleton</h1>
 <pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div><div class="lineno">8</div><div class="lineno">9</div><div class="lineno">10</div><div class="lineno">11</div><div class="lineno">12</div><div class="lineno">13</div><div class="lineno">14</div><div class="lineno">15</div><div class="lineno">16</div><div class="lineno">17</div><div class="lineno">18</div><div class="lineno">19</div><div class="lineno">20</div><div class="lineno">21</div><div class="lineno">22</div><div class="lineno">23</div><div class="lineno">24</div><div class="lineno">25</div><div class="lineno">26</div><div class="lineno">27</div><div class="lineno">28</div><div class="lineno">29</div><div class="lineno">30</div><div class="lineno">31</div><div class="lineno">32</div><div class="lineno">33</div><div class="lineno">34</div><div class="lineno">35</div><div class="lineno">36</div><div class="lineno">37</div><div class="lineno">38</div><div class="lineno">39</div><div class="lineno">40</div><div class="lineno">41</div><div class="lineno">42</div><div class="lineno">43</div></td><td class="code">
@@ -231,13 +231,15 @@ In parslet, that&rsquo;d look like this:
 </td></tr></tbody></table></pre>
 <p><a href="http://www.retrojunkie.com/asciiart/health/skeleton.htm">source</a></p>
 
+<h1>Break</h1>
+
 <h1>Wild Card Walking Skeleton</h1>
 
 <p>Walking Skeleton</p>
 
 <blockquote>
 <p>an implementation of the thinnest possible slice of real functionality that we can build, deploy and test end-to-end.
-&ndash; GOOGbT</p>
+&ndash; GOOS,GbT</p>
 </blockquote>
 
 <p>For our SQL language, the thinnest possible query is a select star from a single table with no conditionals. In order to build that, we&rsquo;ll have to start the parser, the semantic model, the transformer that populates the semantic model and the basics of execution.</p>
@@ -248,13 +250,8 @@ In parslet, that&rsquo;d look like this:
 <p>Through it, we&rsquo;ll build a small part of all the needed pieces of our interpreter.</p>
 
 <p>It&rsquo;s transitions</p>
-
-<ol>
-<li><p><code>SELECT * FROM one_to_five</code></p>
-
-<p>1.</p></li>
-</ol>
-
+<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">one_to_five</span>
+</td></tr></tbody></table></pre>
 <script type="text/graphviz">
 digraph wildcard_0 {
   query -> from_table;
@@ -272,17 +269,11 @@ digraph wildcard_0 {
   from_table[shape="record"; label="FROM|one_to_five"];
 }
 </script>
-
-<ol>
-<li><p><code>SelectQuery.new(WildCard.new, FromTable.new(&quot;one_to_five&quot;))</code></p></li>
-<li></li>
-</ol>
-<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="o">[</span><span class="p">{</span><span class="s2">&quot;dec&quot;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;eng&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;one&quot;</span><span class="p">},</span>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span><span class="no">WildCard</span><span class="nf">.new</span><span class="p">,</span> <span class="no">FromTable</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;one_to_five&quot;</span><span class="p">))</span>
+</td></tr></tbody></table></pre><pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="o">[</span><span class="p">{</span><span class="s2">&quot;dec&quot;</span><span class="o">=&gt;</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;eng&quot;</span><span class="o">=&gt;</span><span class="s2">&quot;one&quot;</span><span class="p">},</span>
     <span class="c1">#... </span>
    <span class="o">]</span>
 </td></tr></tbody></table></pre>
-<h2>End slides</h2>
-
 <h2>First Step of the Skeleton: Acceptance spec.</h2>
 
 <p>Open up <code>spec/sql_awesome_spec.rb</code>.</p>
@@ -343,9 +334,9 @@ digraph {
 }
 </script>
 
-<p>Let&rsquo;s drop some code in there to get started.</p>
+<p>Let&rsquo;s drop some code in the RDBMS class to get started.</p>
 <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code">  <span class="k">def </span><span class="nf">eval</span> <span class="n">query_string</span>
-    <span class="n">intermediate_tree</span> <span class="o">=</span> <span class="no">Parser</span><span class="nf">.new.parse</span> <span class="n">program</span>
+    <span class="n">intermediate_tree</span> <span class="o">=</span> <span class="no">Parser</span><span class="nf">.new.parse</span> <span class="n">query_string</span>
     <span class="n">model</span> <span class="o">=</span> <span class="no">Transformer</span><span class="nf">.new.apply</span> <span class="n">intermediate_tree</span>
     <span class="n">model</span><span class="nf">.eval</span> <span class="vi">@tables</span>
   <span class="k">end</span>
@@ -378,18 +369,26 @@ NameError: undefined local variable or method `root&#39; for #&lt;SQLAwesome::Pa
     <span class="c1"># handy list pattern x.repeat(1,1) &gt; (y &gt;&gt; x).repeat</span>
 
     <span class="n">rule</span><span class="p">(</span><span class="ss">:ident</span><span class="p">)</span> <span class="p">{</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;[a-zA-Z]&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;\w&#39;</span><span class="p">)</span><span class="nf">.repeat</span> <span class="p">}</span>
-    <span class="n">rule</span><span class="p">(</span><span class="ss">:space</span><span class="p">)</span>      <span class="p">{</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;\s&#39;</span><span class="p">)</span><span class="nf">.repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">}</span>
-    <span class="n">rule</span><span class="p">(</span><span class="ss">:space?</span><span class="p">)</span>     <span class="p">{</span> <span class="n">space</span><span class="nf">.maybe</span> <span class="p">}</span>
+    <span class="n">rule</span><span class="p">(</span><span class="ss">:space</span><span class="p">)</span>  <span class="p">{</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;\s&#39;</span><span class="p">)</span><span class="nf">.repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">rule</span><span class="p">(</span><span class="ss">:space?</span><span class="p">)</span> <span class="p">{</span> <span class="n">space</span><span class="nf">.maybe</span> <span class="p">}</span>
 
-    <span class="n">rule</span><span class="p">(</span><span class="ss">:integer</span><span class="p">)</span>    <span class="p">{</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;[0-9]&#39;</span><span class="p">)</span><span class="nf">.repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:integer</span><span class="p">)</span> <span class="p">}</span>
+    <span class="n">rule</span><span class="p">(</span><span class="ss">:integer</span><span class="p">)</span> <span class="p">{</span> <span class="n">match</span><span class="p">(</span><span class="s1">&#39;[0-9]&#39;</span><span class="p">)</span><span class="nf">.repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:integer</span><span class="p">)</span> <span class="p">}</span>
 
-    <span class="n">rule</span><span class="p">(</span><span class="ss">:comma</span><span class="p">)</span>      <span class="p">{</span> <span class="n">str</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="p">}</span>
+    <span class="n">rule</span><span class="p">(</span><span class="ss">:comma</span><span class="p">)</span>   <span class="p">{</span> <span class="n">str</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="p">}</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </td></tr></tbody></table></pre>
 <p>The reason it is complaining is because we need to define a root rule.</p>
 
-<p>Parslet is an internal DSL for describing PEGs. Parser Expression Grammars. I&rsquo;ve included some handy rules we&rsquo;ll use as building blocks.</p>
+<blockquote>
+<p>Parslet is an internal DSL for describing PEGs. Parser Expression Grammars. I&rsquo;ve included some handy rules we&rsquo;ll use as building blocks.
+It&rsquo;s one of many different tools you can use to write External DSLs.</p>
+
+<p>Regexes are also valid, but SQL is just complicated enough to need a grammar.</p>
+
+<p>You can also use a parser generator that uses an External DSL to define
+grammars. For example, <a href="https://github.com/evanphx/kpeg">kpeg</a>.</p>
+</blockquote>
 
 <p>Let&rsquo;s try uncommenting <code># root :statement</code> and see what happens.</p>
 <pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div><div class="lineno">8</div><div class="lineno">9</div><div class="lineno">10</div><div class="lineno">11</div><div class="lineno">12</div></td><td class="code">$ rake
@@ -427,10 +426,10 @@ test_0001_converts a wildcard statement with no where into an intermediate tree(
 NoMethodError: undefined method `statement&#39; for #&lt;SQLAwesome::Parser:0x007f83cb089c00&gt;
 </td></tr></tbody></table></pre>
 <p>Let&rsquo;s make that one pass. In parser.rb, add this rule:</p>
-<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code">    <span class="n">rule</span><span class="p">(</span><span class="ss">:statement</span><span class="p">)</span> <span class="p">{</span> <span class="n">str</span><span class="p">(</span><span class="s2">&quot;SELECT&quot;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="o">&gt;&gt;</span>
-                       <span class="n">str</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:args</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="o">&gt;&gt;</span>
-                       <span class="n">str</span><span class="p">(</span><span class="s2">&quot;FROM&quot;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="o">&gt;&gt;</span> <span class="n">ident</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:from</span><span class="p">)</span>
-                     <span class="p">}</span>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="n">rule</span><span class="p">(</span><span class="ss">:statement</span><span class="p">)</span> <span class="p">{</span> <span class="n">str</span><span class="p">(</span><span class="s2">&quot;SELECT&quot;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="o">&gt;&gt;</span>
+                   <span class="n">str</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:args</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="o">&gt;&gt;</span>
+                   <span class="n">str</span><span class="p">(</span><span class="s2">&quot;FROM&quot;</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">space?</span> <span class="o">&gt;&gt;</span> <span class="n">ident</span><span class="nf">.as</span><span class="p">(</span><span class="ss">:from</span><span class="p">)</span>
+                 <span class="p">}</span>
 </td></tr></tbody></table></pre>
 <p>That probably looks a little complicated, so let&rsquo;s break it down a little.</p>
 
@@ -443,13 +442,13 @@ NoMethodError: undefined method `statement&#39; for #&lt;SQLAwesome::Parser:0x00
 <li><code>&gt;&gt; space?</code> This refers to the <code>space?</code> rule that was already written. It matches space characters or nothing.</li>
 <li><p><code>str(&quot;*&quot;)</code> looks for the string <code>*</code></p>
 
-<p>Parslet provides a number of small parsers or parslets that you combine to build a full parser. For example <code>str</code> is a helper method that actually creates an instance of a class that only recognizes strings.</p>
+<p>Parslet provides a number of small parsers or parslets that you combine to build a full parser. For example <code>str</code> is a helper method that actually creates an instance of a class that only recognizes strings.</p></li>
+</ol>
 <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="k">def </span><span class="nf">str</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-<span class="no">Atoms</span><span class="o">::</span><span class="no">Str</span><span class="nf">.new</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+  <span class="no">Atoms</span><span class="o">::</span><span class="no">Str</span><span class="nf">.new</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
 <span class="k">end</span>
 </td></tr></tbody></table></pre>
-<p><a href="https://github.com/kschiess/parslet/blob/142f33bb147edede1753de7fc0ea066e07f565fb/lib/parslet.rb#L155-L157">str impl</a></p></li>
-</ol>
+<p><a href="https://github.com/kschiess/parslet/blob/142f33bb147edede1753de7fc0ea066e07f565fb/lib/parslet.rb#L155-L157">str impl</a></p>
 
 <p>Parslet isn&rsquo;t the only way to build grammars for external DSLs in Ruby. It&rsquo;s just nice because as an internal DSL it doesn&rsquo;t have a separate compile step.</p>
 
@@ -473,8 +472,9 @@ NoMethodError: private method `eval&#39; called for {:args=&gt;&quot;*&quot;@7, 
 <p>It shares a similar interface with the parser&rsquo;s DSL, but instead of naming things on the left and describing what they match on the right, it describes what to match on the left and what to do with it on the right.</p>
 
 <p>For our current tree, we only need one rule to transform into the right model classes&ndash;but before we do that, let&rsquo;s write a test.</p>
-<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code"><span class="n">it</span> <span class="s2">&quot;converts {args:&#39;*&#39;, from:&#39;a&#39;} into a wild card query object&quot;</span> <span class="k">do</span>
-  <span class="n">result</span> <span class="o">=</span> <span class="no">SQLAwesome</span><span class="o">::</span><span class="no">Transformer</span><span class="nf">.new.apply</span> <span class="n">args</span><span class="ss">:&#39;*&#39;</span><span class="p">,</span> <span class="n">from</span><span class="ss">:&#39;a&#39;</span>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div></td><td class="code"><span class="n">it</span> <span class="s2">&quot;converts {args:&#39;*&#39;, from:&#39;a&#39;} into a wild card query object&quot;</span> <span class="k">do</span>
+  <span class="n">result</span> <span class="o">=</span> <span class="no">SQLAwesome</span><span class="o">::</span><span class="no">Transformer</span><span class="nf">.new.apply</span> <span class="n">args</span><span class="ss">:&#39;*&#39;</span><span class="p">,</span>
+                                             <span class="n">from</span><span class="ss">:&#39;a&#39;</span>
 
   <span class="n">result</span><span class="nf">.inspect.must_equal</span> <span class="s2">&quot;Query: Fields:all FromTable:a&quot;</span>
 <span class="k">end</span>
@@ -493,9 +493,11 @@ test_0001_converts {args:&#39;*&#39;, from:&#39;a&#39;} into a wild card query o
 <p>Sweet! A new failure! Since a transform with no rules does nothing, the resulting object is currently the input. Let&rsquo;s change that.</p>
 
 <p>Here&rsquo;s the implementation:</p>
-<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code">    <span class="n">rule</span><span class="p">(</span><span class="ss">args: </span><span class="n">simple</span><span class="p">(</span><span class="ss">:args</span><span class="p">),</span>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div></td><td class="code">    <span class="n">rule</span><span class="p">(</span><span class="ss">args: </span><span class="n">simple</span><span class="p">(</span><span class="ss">:args</span><span class="p">),</span>
          <span class="ss">from: </span><span class="n">simple</span><span class="p">(</span><span class="ss">:table_name</span><span class="p">))</span> <span class="p">{</span> 
-           <span class="no">SemanticModel</span><span class="o">::</span><span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span><span class="no">SemanticModel</span><span class="o">::</span><span class="no">WildCard</span><span class="nf">.new</span><span class="p">,</span> <span class="n">table_name</span><span class="p">)</span>
+           <span class="no">SemanticModel</span><span class="o">::</span><span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span>
+             <span class="no">SemanticModel</span><span class="o">::</span><span class="no">WildCard</span><span class="nf">.new</span><span class="p">,</span>
+             <span class="n">table_name</span><span class="p">)</span>
          <span class="p">}</span>
 </td></tr></tbody></table></pre>
 <p>Put this inside <code>lib/sql_awesome/transformer.rb</code> next to / replacing the commented out rules.</p>
@@ -886,10 +888,9 @@ Finished tests in 0.021960s, 591.9854 tests/s, 683.0601 assertions/s.
 13 tests, 15 assertions, 0 failures, 0 errors, 0 skips
 </td></tr></tbody></table></pre>
 <h1>Multiple Fields</h1>
-
-<p><code>SELECT year, name FROM hats</code>
-SelectQuery.new Fields.new([&ldquo;year&rdquo;, &ldquo;name&rdquo;]), From.new(&ldquo;hats&rdquo;)</p>
-
+<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="k">SELECT</span> <span class="k">year</span><span class="p">,</span> <span class="n">name</span> <span class="k">FROM</span> <span class="n">hats</span>
+</td></tr></tbody></table></pre><pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="no">SelectQuery</span><span class="nf">.new</span> <span class="no">Fields</span><span class="nf">.new</span><span class="p">(</span><span class="o">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="o">]</span><span class="p">),</span> <span class="no">From</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;hats&quot;</span><span class="p">)</span>
+</td></tr></tbody></table></pre>
 <h1>Single Element Where clauses</h1>
 
 <h2>Numeric Equality</h2>
@@ -924,6 +925,14 @@ SelectQuery.new Fields.new([&ldquo;year&rdquo;, &ldquo;name&rdquo;]), From.new(&
 <li>Better Error Messages for parsing / missing tables/columns.</li>
 <li>Syntax highlighting.</li>
 </ul></li>
+</ul>
+
+<h1>Further Reading</h1>
+
+<ul>
+<li><a href="http://kschiess.github.io/parslet/documentation.html">Parslet Documentation</a></li>
+<li>Domain Specific Languages - Martin Fowler <a href="http://martinfowler.com/books/dsl.html">martinfowler.com</a></li>
+<li>Growing Object Oriented Software, Guided by Tests <a href="http://www.amazon.com/Growing-Object-Oriented-Software-Guided-Tests/dp/0321503627">amazon.com</a></li>
 </ul>
 
     <script src="../js/viz.js" type="text/javascript"></script>
