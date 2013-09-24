@@ -7,12 +7,13 @@
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     
     <!-- Use title if it's in the page YAML frontmatter -->
-    <title>The Middleman</title>
+    <title>Curriculum</title>
     
-    <link href="../stylesheets/normalize.css" media="screen" rel="stylesheet" type="text/css" />
-<link href="../stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
-<link href="../stylesheets/syntax_highlighting.css" media="screen" rel="stylesheet" type="text/css" />
-    <script src="../javascripts/all.js" type="text/javascript"></script>
+    <link href="../css/normalize.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/all.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/syntax_highlighting.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/curriculum.css" media="screen" rel="stylesheet" type="text/css" />
+    
   </head>
   
   <body class="curriculum curriculum_index">
@@ -33,7 +34,7 @@
 <ul>
 <li>Ask questions</li>
 <li>Type along w/ me</li>
-<li>Notes are on github.com/baroquebobcat/dsl_workshop</li>
+<li>Notes are on external-dsl-ruby.baroquebobcat.com</li>
 <li>If you&rsquo;ve got Q&rsquo;s after
 
 <ul>
@@ -134,19 +135,18 @@ expressiveness focused on a particular domain.</p>
 <h2>Convert to slides</h2>
 
 <h1>one plus one</h1>
-
-<p>(0) <code>1 + 2</code></p>
-
-<p>(1) </p>
-
-<p>digraph hello {
-  plus[label=&ldquo;+&rdquo;];
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span>
+</td></tr></tbody></table></pre>
+<script type="text/graphviz">
+digraph hello {
+  plus[label="+"];
   plus -> 1;
   plus -> 2;
 }
-(2) <code>Add.new Int.new(&quot;1&quot;), Int.new(&quot;2&quot;)</code>
-(3) <code>#=&gt; 3</code></p>
-
+</script>
+<pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="no">Add</span><span class="nf">.new</span> <span class="no">Int</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">),</span> <span class="no">Int</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)</span>
+</td></tr></tbody></table></pre><pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="c1">#=&gt; 3</span>
+</td></tr></tbody></table></pre>
 <h1>Hello World Transitions</h1>
 
 <p>(0) -> (1) Tree Construction
@@ -254,18 +254,25 @@ In parslet, that&rsquo;d look like this:
 
 <p>1.</p></li>
 </ol>
-<pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code">digraph wildcard_0 {
-  query -&gt; from_table;
-  from_table[shape=&quot;record&quot;; label=&quot;FROM|one_to_five&quot;]
+
+<script type="text/graphviz">
+digraph wildcard_0 {
+  query -> from_table;
+  from_table[shape="record"; label="FROM|one_to_five"];
 }
-</td></tr></tbody></table></pre>
+</script>
+
 <p>We could build a tree like this, but I&rsquo;m anticipating that we&rsquo;ll likely want to have different behavior for other SELECT args in the future. So, we&rsquo;ll make one that looks more like this:</p>
-<pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code">digraph wildcard_0 {
-  query -&gt; from_table;
-  query -&gt; args[shape=&quot;record&quot;; label=&quot;args|*&quot;]
-  from_table[shape=&quot;record&quot;; label=&quot;FROM|one_to_five&quot;]
+
+<script type="text/graphviz">
+digraph wildcard_0 {
+  query -> from_table;
+  query -> args;
+  args[shape="record"; label="args|*"];
+  from_table[shape="record"; label="FROM|one_to_five"];
 }
-</td></tr></tbody></table></pre>
+</script>
+
 <ol>
 <li><p><code>SelectQuery.new(WildCard.new, FromTable.new(&quot;one_to_five&quot;))</code></p></li>
 <li></li>
@@ -322,14 +329,20 @@ NoMethodError: private method `eval&#39; called for #&lt;SQLAwesome::RDBMS:0x007
 rake aborted!
 </td></tr></tbody></table></pre>
 <p>Oops, I didn&rsquo;t write the <code>eval</code> method for the RDBMS! What should that look like? First, let&rsquo;s back up and talk architecture a little. Our little RDMS is going to need to be able to go through all the stages we talked about earlier. To do that, we&rsquo;ll need to split up some responsibilities.</p>
-<pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div></td><td class="code">digraph {
-  query_string -&gt; parser[shape=rect];
-  parser -&gt; tree;
-  tree -&gt; transformer[shape=rect];
-  transformer -&gt; semantic_model;
-  semantic_model -&gt; execution[shape=rect];
+
+<script type="text/graphviz">
+digraph {
+  query_string   -> parser;
+  parser         -> tree;
+  tree           -> transformer;
+  transformer    -> semantic_model;
+  semantic_model -> execution;
+  parser[shape=rect];
+  transformer[shape=rect]
+  execution[shape=rect];
 }
-</td></tr></tbody></table></pre>
+</script>
+
 <p>Let&rsquo;s drop some code in there to get started.</p>
 <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code">  <span class="k">def </span><span class="nf">eval</span> <span class="n">query_string</span>
     <span class="n">intermediate_tree</span> <span class="o">=</span> <span class="no">Parser</span><span class="nf">.new.parse</span> <span class="n">program</span>
@@ -627,13 +640,17 @@ Finished tests in 0.021596s, 324.1341 tests/s, 416.7438 assertions/s.
 <li><code>SELECT eng FROM one_to_five</code>
 1.</li>
 </ol>
-<pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div></td><td class="code">digraph one_column {
-  query -&gt; from_table;
-  query -&gt; args;
-  args -&gt; field[shape=&quot;record&quot;; label=&quot;field|eng&quot;]
-  from_table[shape=&quot;record&quot;; label=&quot;FROM|one_to_five&quot;]
+
+<script type="text/graphviz">
+digraph one_column {
+  query -> from_table;
+  query -> args;
+  args -> field;
+  field[shape="record"; label="field|eng"];
+  from_table[shape="record"; label="FROM|one_to_five"]
 }
-</td></tr></tbody></table></pre>
+</script>
+
 <ol>
 <li><p><code>SelectQuery.new(Field.new(&quot;eng&quot;), FromTable.new(&quot;one_to_five&quot;))</code></p></li>
 <li></li>
@@ -678,13 +695,17 @@ Parslet::ParseFailed: Failed to match sequence (&#39;SELECT&#39; SPACE? args:&#3
 </blockquote>
 
 <p>Let&rsquo;s begin with changing the existing wildcard parser test to reflect our different tree.</p>
-<pre class="highlight text"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div></td><td class="code">digraph one_column {
-  query -&gt; from_table;
-  query -&gt; args;
-  args -&gt; field[shape=&quot;record&quot;; label=&quot;wildcard|*&quot;]
-  from_table[shape=&quot;record&quot;; label=&quot;FROM|one_to_five&quot;]
+
+<script type="text/graphviz">
+digraph one_column {
+  query -> from_table;
+  query -> args;
+  args -> field;
+  field[shape="record"; label="wildcard|*"];
+  from_table[shape="record"; label="FROM|one_to_five"];
 }
-</td></tr></tbody></table></pre>
+</script>
+
 <p>We could leave it and create a new grammar rule that&rsquo;s separate, but I don&rsquo;t think it&rsquo;s as neat.</p>
 
 <p>So our old test becomes:</p>
@@ -872,31 +893,43 @@ SelectQuery.new Fields.new([&ldquo;year&rdquo;, &ldquo;name&rdquo;]), From.new(&
 <h1>Single Element Where clauses</h1>
 
 <h2>Numeric Equality</h2>
-
-<p>SELECT * FROM one<em>to</em>five WHERE dec = 1
-SelectQuery.new(WildCard.new,
-                From.new(&ldquo;one<em>to</em>five&rdquo;),
-                Where.new(
-                  NumericEquality.new(&ldquo;dec&rdquo;, 1)))</p>
-
+<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">one_to_five</span> <span class="k">WHERE</span> <span class="n">dec</span> <span class="o">=</span> <span class="mi">1</span>
+</td></tr></tbody></table></pre><pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span><span class="no">WildCard</span><span class="nf">.new</span><span class="p">,</span>
+                <span class="no">From</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;one_to_five&quot;</span><span class="p">),</span>
+                <span class="no">Where</span><span class="nf">.new</span><span class="p">(</span>
+                  <span class="no">NumericEquality</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;dec&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+</td></tr></tbody></table></pre>
 <h2>String Equality</h2>
+<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">one_to_five</span> <span class="k">WHERE</span> <span class="n">eng</span> <span class="o">=</span> <span class="nv">&quot;one&quot;</span>
+</td></tr></tbody></table></pre><pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span><span class="no">WildCard</span><span class="nf">.new</span><span class="p">,</span>
+                <span class="no">From</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;one_to_five&quot;</span><span class="p">),</span>
+                <span class="no">Where</span><span class="nf">.new</span><span class="p">(</span>
+                  <span class="no">StringEquality</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;eng&quot;</span><span class="p">,</span> <span class="s2">&quot;one&quot;</span><span class="p">)))</span>
+</td></tr></tbody></table></pre>
+<h1>Where to go from here:</h1>
 
-<p>SELECT * FROM one<em>to</em>five WHERE eng = &ldquo;one&rdquo;
-SelectQuery.new(WildCard.new,
-                From.new(&ldquo;one<em>to</em>five&rdquo;),
-                Where.new(
-                  StringEquality.new(&ldquo;eng&rdquo;, &ldquo;one&rdquo;)))</p>
+<ul>
+<li>Language Features
 
-<p>Where to go from here:
- * Language Features
-   * Compound Where clauses (AND and OR).
-   * Functions (COUNT(*))
-   * Aliases (SELECT name AS real_name)
-   * Joins
-   * Indices / Query Planning
- * Tooling
-   * Better Error Messages for parsing / missing tables/columns.
-   * Syntax highlighting.</p>
+<ul>
+<li>Compound Where clauses (AND and OR).</li>
+<li>Functions (COUNT(*))</li>
+<li>Aliases (SELECT name AS real_name)</li>
+<li>Joins</li>
+<li>Indices / Query Planning</li>
+</ul></li>
+<li>Tooling
 
+<ul>
+<li>Better Error Messages for parsing / missing tables/columns.</li>
+<li>Syntax highlighting.</li>
+</ul></li>
+</ul>
+
+    <script src="../js/viz.js" type="text/javascript"></script>
+<script src="../js/viz_helper.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      Vizzy();
+    </script>
   </body>
 </html>
