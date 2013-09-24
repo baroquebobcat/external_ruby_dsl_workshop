@@ -77,19 +77,25 @@ Since we're building a SQL implementation, I thought I'd also show some examples
 SQL
 
 ```sql
-select name, age from persons where favorite_food = 'bananas' limit 10
+select name, age
+from persons
+where favorite_food = 'bananas'
+limit 10
 ```
 
 Ruby
 
 ```ruby
-tables["persons"].select{|p|p["favorite_food"]=="bananas"}.map{|p| {name: p["name"], age: p["age"]}.first 10
+tables["persons"].select{|p|p["favorite_food"]=="bananas"}.
+                  map{|p| {name: p["name"], age: p["age"]}.
+                  first(10)
 ```
 
 Rails
 
 ```ruby
-Person.where(favorite_food: 'bananas').select(:name, :age).limit(10)
+Person.where(favorite_food: 'bananas').
+       select(:name, :age).limit(10)
 ```
 
 Java
