@@ -21,6 +21,7 @@
 <link href="../css/syntax_highlighting.css" media="screen" rel="stylesheet" type="text/css" />
 <link href="../css/fullscreen-img.css" media="screen" rel="stylesheet" type="text/css" />
 <link href="../css/graphviz.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/preso_highlighting.css" media="screen" rel="stylesheet" type="text/css" />
     
   </head>
   
@@ -31,18 +32,255 @@
   <h1>External DSLs in Ruby</h1>
 </section>
 <section>
-  1+2
+  <h1>Logistics & Schedule</h1>
 </section>
 <section>
-  <h1>
-    <script type="text/graphviz">digraph hello {
-       bgcolor="transparent"
-      plus[label="+"];
-      plus -> 1;
-      plus -> 2;
-    }
-    </script>
-  </h1>
+  <ul>
+  <li>Overview of DSLs</li>
+  <li>Building a Walking Skeleton</li>
+  <li>Adding More Features
+  <br>
+  <br>
+  <em>Breaks every hour or so</em></li>
+  </ul>
+</section>
+<section>
+  <h1>Overview</h1>
+</section>
+<section>
+  <h2>Rocking the workshop</h2>
+</section>
+<section>
+  <h2>Ask Questions</h2>
+</section>
+<section>
+  <h2>Type along w/ me</h2>
+</section>
+<section>
+  <h1>Notes</h1>
+  <h1>bit.ly/ext-dsl-ruby</h1>
+</section>
+<section>
+  <h1>Why</h1>
+</section>
+<section>
+  <h2>
+    <ul>
+    <li>Know when to use DSLs</li>
+    <li>Know how to build DSLs</li>
+    <li>Learn compilery stuff</li>
+    </ul>
+  </h2>
+</section>
+<section>
+  <h1>DSLs</h1>
+</section>
+<section>
+  <h2>
+    <blockquote>
+    <p>Domain-specific language (noun): a computer programming language of limited 
+    expressiveness focused on a particular domain.</p>
+    </blockquote>
+    
+    <p>-- <a href="http://martinfowler.com/dsl.html">Martin Fowler</a></p>
+  </h2>
+</section>
+<section>
+  <h1>Whole bunches of them</h1>
+</section>
+<section>
+  <h2>
+    haml, sass, arel,
+    jQuery, SQL, graphviz,
+    regex, rake, make, rspec, Gherkin ...
+  </h2>
+</section>
+<section>
+  <h1>Internal vs External</h1>
+</section>
+<section>
+  <h1>Haml vs Builder</h1>
+</section>
+<section>
+  <h2>Builder</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div></td><td class="code"><span class="n">builder</span> <span class="o">=</span> <span class="no">Builder</span><span class="o">::</span><span class="no">XmlMarkup</span><span class="nf">.new</span>
+  <span class="n">builder</span><span class="nf">.section</span><span class="p">(</span><span class="ss">class: </span><span class="s2">&quot;container&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">b</span><span class="o">|</span>
+    <span class="n">b</span><span class="nf">.h1</span> <span class="s2">&quot;title&quot;</span>
+    <span class="n">b</span><span class="nf">.h2</span> <span class="s2">&quot;subtitle&quot;</span>
+    <span class="n">b</span><span class="nf">.div</span><span class="p">(</span><span class="s2">&quot;some content&quot;</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">&quot;content&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>Haml</h2>
+  <pre class="highlight haml"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code"><span class="nt">%section</span><span class="nc">.container</span>
+    <span class="nt">%h1</span><span class="p">=</span> <span class="s2">&quot;title&quot;</span>
+    <span class="nt">%h2</span><span class="p">=</span> <span class="s2">&quot;subtitle&quot;</span>
+    <span class="nc">.content</span>
+      <span class="p">=</span> <span class="s2">&quot;some content&quot;</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>External DSL == Less Syntax</h2>
+</section>
+<section>
+  <h1>SQL-isms</h1>
+</section>
+<section>
+  <h2>Plain Ruby</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="n">tables</span><span class="o">[</span><span class="s2">&quot;persons&quot;</span><span class="o">]</span><span class="nf">.select</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;favorite_food&quot;</span><span class="o">]==</span><span class="s2">&quot;bananas&quot;</span><span class="p">}</span><span class="o">.</span>
+                <span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="nb">p</span><span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">age: </span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;age&quot;</span><span class="o">]</span><span class="p">}</span><span class="o">.</span>
+                <span class="n">first</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>Rails</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div></td><td class="code"><span class="no">Person</span><span class="nf">.where</span><span class="p">(</span><span class="ss">favorite_food: </span><span class="s1">&#39;bananas&#39;</span><span class="p">)</span><span class="o">.</span>
+         <span class="nb">select</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="ss">:age</span><span class="p">)</span><span class="nf">.limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>SQL</h2>
+  <pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
+  <span class="k">FROM</span> <span class="n">persons</span>
+  <span class="k">WHERE</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
+  <span class="k">LIMIT</span> <span class="mi">10</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h1>When to use a DSL</h1>
+</section>
+<section>
+  <ul>
+  <li>constrain to domain</li>
+  <li>communication</li>
+  <li>representing alt comp models</li>
+  </ul>
+</section>
+<section>
+  <h1>Common DSL patterns</h1>
+</section>
+<section>
+  <ul>
+  <li>Production Rules</li>
+  <li>State Machines</li>
+  <li>Hierarchical Datastructures</li>
+  </ul>
+</section>
+<section>
+  <h1>DSL Parts</h1>
+</section>
+<section>
+  <h2>
+    <ul>
+    <li>Parser / Internal DSL</li>
+    <li>Semantic Model</li>
+    <li>Execution / Code Generation</li>
+    </ul>
+  </h2>
+</section>
+<section>
+  <h2>Parser / Internal DSL</h2>
+</section>
+<section>
+  <h2>Semantic Model</h2>
+</section>
+<section>
+  <h2>Execution / Code Generation</h2>
+</section>
+<section>
+  <h1>What We're Doing Today</h1>
+</section>
+<section>
+  <h2>Take a String in our DSL</h2>
+  <pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
+  <span class="k">FROM</span> <span class="n">persons</span>
+  <span class="k">WHERE</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
+  <span class="k">LIMIT</span> <span class="mi">10</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>Convert it into a tree</h2>
+  <script type="text/graphviz">digraph{
+    query -> args;
+    query -> from;
+    query -> where;
+    query -> limit;
+    args ->  arg_0;
+    args ->  arg_1;
+    where -> equality;
+    from[shape="record"; label="FROM|persons"];
+    
+    where[label="Where"];
+    arg_0[shape="record"; label="col|name"];
+    arg_1[shape="record"; label="col|age"];
+    equality[shape="record"; label="lhs|favorite_food|rhs|'bananas'"];
+    limit[shape="record"; label="LIMIT|10"];
+  }
+  </script>
+</section>
+<section>
+  <h2>Convert that into a semantic model</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div></td><td class="code"><span class="n">q</span> <span class="o">=</span> <span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span>
+    <span class="no">Args</span><span class="nf">.new</span><span class="p">(</span><span class="no">Field</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="no">Field</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">)),</span>
+    <span class="no">From</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">),</span>
+    <span class="no">Where</span><span class="nf">.new</span><span class="p">(</span>
+      <span class="no">Equality</span><span class="nf">.new</span><span class="p">(</span><span class="no">FieldAccess</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;favorite_food&quot;</span><span class="p">,</span> <span class="s2">&quot;bananas&quot;</span><span class="p">))),</span>
+    <span class="no">Limit</span><span class="nf">.new</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+  <span class="p">)</span>
+  </td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>Run it</h2>
+  <div class='bigger'>
+    <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="n">q</span><span class="nf">.execute_with</span> <span class="n">db</span>
+    </td></tr></tbody></table></pre>
+  </div>
+</section>
+<section>
+  <h2>Walking Skeleton</h2>
+  <pre class='skeleton'>|
+                   .-"```"-.
+                  /         \
+                  |  _   _  |
+                  | (_\ /_) |
+                  (_   A   _)
+                   | _____ |
+                   \`"""""`/
+                    '-.-.-'
+                     _:=:_                   \\|
+              .-""""`_'='_`""""-.           \///
+             (`,-- -`\   /`- --,`)          (`/
+             / //`-_--| |--_-`\\ \         .//
+            / /(_-_  _| |_  _-_)\ \       ///
+           / / (_- __ \ / __ -_) \ \     ///
+          / /  (_ -_ - ^ - _- _)  \ \   ///
+         / /   (_-  _ /=\ _ - _)   \ \ '//
+        / /     (_ -.':=:'. -_)     \ \//
+       (`;`     (_-'  :=:  '-_)      (_,'
+        \\.   jgs __  :=:  __
+         \\\    .'  `':=:'`  '.
+          \\\  |  .--. = .--.  |
+           \\\ |  (  / = \  )  |
+            \\` \ _`' \=/ '`_ /
+            ;`)  ( ;_/`v`\_; )
+            |||\ | |       | |
+            |\\  | |       | |
+                 | |       | |
+                 | |       | |
+                 | |       | |
+                 | |       | |
+                 | |       | |
+                (._)       (_.)
+                 ||,       ,||
+                 ||:       :||
+                 ||:       :||
+                 ||:       :||
+                 ||:       :||
+                 ||'       '||
+                ///)       (\\\
+              .///`         `\\\.
+             `//`             `\\`</pre>
 </section>
 
     </div>

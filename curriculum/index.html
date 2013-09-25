@@ -22,8 +22,8 @@
 <h2>Schedule</h2>
 
 <ul>
-<li>8:00 - 9:00: Overview of DSLs / what we&rsquo;re doing today</li>
-<li>9:00 - 9:10: break</li>
+<li>8:00 - 8:50: Overview of DSLs / what we&rsquo;re doing today</li>
+<li>8:50 - 9:00: break</li>
 <li>9:10 - 11:30: Curriculum</li>
 <li>11:30 - 12:00: Questions</li>
 </ul>
@@ -97,10 +97,10 @@ expressiveness focused on a particular domain.</p>
 <p>Since we&rsquo;re building a SQL implementation, I thought I&rsquo;d also show some examples for representing equivalent computations with it.</p>
 
 <p>SQL</p>
-<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">select</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
-<span class="k">from</span> <span class="n">persons</span>
-<span class="k">where</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
-<span class="k">limit</span> <span class="mi">10</span>
+<pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
+<span class="k">FROM</span> <span class="n">persons</span>
+<span class="k">WHERE</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
+<span class="k">LIMIT</span> <span class="mi">10</span>
 </td></tr></tbody></table></pre>
 <p>Ruby</p>
 <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="n">tables</span><span class="o">[</span><span class="s2">&quot;persons&quot;</span><span class="o">]</span><span class="nf">.select</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;favorite_food&quot;</span><span class="o">]==</span><span class="s2">&quot;bananas&quot;</span><span class="p">}</span><span class="o">.</span>

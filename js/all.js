@@ -964,7 +964,7 @@ d.callMain=function(a){function b(){for(var a=0;3>a;a++)e.push(0)}C(0==S,"cannot
 h?d.noExitRuntime=v:m(h)}finally{L=a}return g};d.run=d.Pe=Da;if(d.preInit)for("function"==typeof d.preInit&&(d.preInit=[d.preInit]);0<d.preInit.length;)d.preInit.pop()();var Ca=v;d.noInitialRun&&(Ca=E);Da();return d.ccall("vizRenderFromString","string",["string","string"],[za,Bb])};
 var Vizzy = function() {
 
-  var graphs = document.querySelectorAll( 'script[type="text/graphviz"]');
+  var graphs = document.querySelectorAll('script[type="text/graphviz"]');
   for( var i = 0, len = graphs.length; i < len; i++ ) {
     var graph = graphs[i];
     var graphText = Viz(graph.innerHTML, "svg");
