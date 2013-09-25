@@ -8,8 +8,8 @@ External DSLs in Ruby
 Schedule
 --------
 
- * 8:00 - 9:00: Overview of DSLs / what we're doing today
- * 9:00 - 9:10: break
+ * 8:00 - 8:50: Overview of DSLs / what we're doing today
+ * 8:50 - 9:00: break
  * 9:10 - 11:30: Curriculum
  * 11:30 - 12:00: Questions
 
@@ -78,10 +78,10 @@ Since we're building a SQL implementation, I thought I'd also show some examples
 SQL
 
 ```sql
-select name, age
-from persons
-where favorite_food = 'bananas'
-limit 10
+SELECT name, age
+FROM persons
+WHERE favorite_food = 'bananas'
+LIMIT 10
 ```
 
 Ruby

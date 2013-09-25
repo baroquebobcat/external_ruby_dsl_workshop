@@ -1,6 +1,6 @@
 var Vizzy = function() {
 
-  var graphs = document.querySelectorAll( 'script[type="text/graphviz"]');
+  var graphs = document.querySelectorAll('script[type="text/graphviz"]');
   for( var i = 0, len = graphs.length; i < len; i++ ) {
     var graph = graphs[i];
     var graphText = Viz(graph.innerHTML, "svg");

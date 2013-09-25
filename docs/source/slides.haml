@@ -5,12 +5,217 @@ layout: presentation
 %section
   %h1 External DSLs in Ruby
 %section
-  1+2
+  %h1 Logistics & Schedule
 %section
-  %h1
-    :graphviz
-      digraph hello {
-        plus[label="+"];
-        plus -> 1;
-        plus -> 2;
-      }
+  :markdown
+    * Overview of DSLs
+    * Building a Walking Skeleton
+    * Adding More Features
+    <br>
+    <br>
+    _Breaks every hour or so_
+    
+%section
+  %h1 Overview
+%section
+  %h2 Rocking the workshop
+%section
+  %h2 Ask Questions
+%section
+  %h2 Type along w/ me
+%section
+  %h1 Notes
+  %h1 bit.ly/ext-dsl-ruby
+%section
+  %h1 Why
+%section
+  %h2
+    :markdown
+      * Know when to use DSLs
+      * Know how to build DSLs
+      * Learn compilery stuff
+%section
+  %h1 DSLs
+%section
+  %h2
+    :markdown
+      > Domain-specific language (noun): a computer programming language of limited 
+      > expressiveness focused on a particular domain.
+
+      -- [Martin Fowler](http://martinfowler.com/dsl.html)
+%section
+  %h1 Whole bunches of them
+%section
+  %h2 
+    haml, sass, arel,
+    jQuery, SQL, graphviz,
+    regex, rake, make, rspec, Gherkin ...
+%section
+  %h1 Internal vs External
+%section
+  %h1 Haml vs Builder
+%section
+  %h2 Builder
+  - code "ruby" do
+    :plain
+      builder = Builder::XmlMarkup.new
+      builder.section(class: "container") do |b|
+        b.h1 "title"
+        b.h2 "subtitle"
+        b.div("some content", class: "content")
+      end
+%section
+  %h2 Haml
+  - code "haml" do
+    :plain
+      %section.container
+        %h1= "title"
+        %h2= "subtitle"
+        .content
+          = "some content"
+%section
+  %h2 External DSL == Less Syntax
+%section
+  %h1 SQL-isms
+%section
+  %h2 Plain Ruby
+  - code "ruby" do
+    :plain
+      tables["persons"].select{|p|p["favorite_food"]=="bananas"}.
+                    map{|p| {name: p["name"], age: p["age"]}.
+                    first(10)
+%section
+  %h2 Rails
+  - code "ruby" do
+    :plain
+      Person.where(favorite_food: 'bananas').
+             select(:name, :age).limit(10)
+%section
+  %h2 SQL
+  - code "sql" do
+    :plain
+      SELECT name, age
+      FROM persons
+      WHERE favorite_food = 'bananas'
+      LIMIT 10
+%section
+  %h1 When to use a DSL
+%section
+  :markdown
+    * constrain to domain
+    * communication
+    * representing alt comp models
+%section
+  %h1 Common DSL patterns
+%section
+  :markdown
+    * Production Rules
+    * State Machines
+    * Hierarchical Datastructures
+%section
+  %h1 DSL Parts
+%section
+  %h2
+    :markdown
+      * Parser / Internal DSL
+      * Semantic Model
+      * Execution / Code Generation
+%section
+  %h2 Parser / Internal DSL
+%section
+  %h2 Semantic Model
+%section
+  %h2 Execution / Code Generation
+
+%section
+  %h1 What We're Doing Today
+%section
+  %h2 Take a String in our DSL
+  - code "sql" do
+    :plain
+      SELECT name, age
+      FROM persons
+      WHERE favorite_food = 'bananas'
+      LIMIT 10
+%section
+  %h2 Convert it into a tree
+  :graphviz
+    digraph{
+      query -> args;
+      query -> from;
+      query -> where;
+      query -> limit;
+      args ->  arg_0;
+      args ->  arg_1;
+      where -> equality;
+      from[shape="record"; label="FROM|persons"];
+      
+      where[label="Where"];
+      arg_0[shape="record"; label="col|name"];
+      arg_1[shape="record"; label="col|age"];
+      equality[shape="record"; label="lhs|favorite_food|rhs|'bananas'"];
+      limit[shape="record"; label="LIMIT|10"];
+    }
+%section
+  %h2 Convert that into a semantic model
+  - code "ruby" do
+    :plain
+      q = SelectQuery.new(
+        Args.new(Field.new("name"), Field.new("age")),
+        From.new("persons"),
+        Where.new(
+          Equality.new(FieldAccess.new("favorite_food", "bananas"))),
+        Limit.new(10)
+      )
+%section
+  %h2 Run it
+  .bigger
+    - code "ruby" do
+      :plain
+        q.execute_with db
+%section
+  %h2 Walking Skeleton
+  %pre.skeleton
+    :plain
+      |
+                       .-"```"-.
+                      /         \
+                      |  _   _  |
+                      | (_\ /_) |
+                      (_   A   _)
+                       | _____ |
+                       \`"""""`/
+                        '-.-.-'
+                         _:=:_                   \\|
+                  .-""""`_'='_`""""-.           \///
+                 (`,-- -`\   /`- --,`)          (`/
+                 / //`-_--| |--_-`\\ \         .//
+                / /(_-_  _| |_  _-_)\ \       ///
+               / / (_- __ \ / __ -_) \ \     ///
+              / /  (_ -_ - ^ - _- _)  \ \   ///
+             / /   (_-  _ /=\ _ - _)   \ \ '//
+            / /     (_ -.':=:'. -_)     \ \//
+           (`;`     (_-'  :=:  '-_)      (_,'
+            \\.   jgs __  :=:  __
+             \\\    .'  `':=:'`  '.
+              \\\  |  .--. = .--.  |
+               \\\ |  (  / = \  )  |
+                \\` \ _`' \=/ '`_ /
+                ;`)  ( ;_/`v`\_; )
+                |||\ | |       | |
+                |\\  | |       | |
+                     | |       | |
+                     | |       | |
+                     | |       | |
+                     | |       | |
+                     | |       | |
+                    (._)       (_.)
+                     ||,       ,||
+                     ||:       :||
+                     ||:       :||
+                     ||:       :||
+                     ||:       :||
+                     ||'       '||
+                    ///)       (\\\
+                  .///`         `\\\.
+                 `//`             `\\`

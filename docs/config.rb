@@ -88,4 +88,3 @@ module Haml::Filters::Graphviz
     %Q[<script type="text/graphviz">#{text}</script>]
   end
 end
-
