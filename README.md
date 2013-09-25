@@ -1,4 +1,4 @@
-SQL Interpreter Workshop
+External DSLs in Ruby using SQL
 =========================
 
 Curriculum is on [external-dsl-ruby.baroquebobcat.com](http://external-dsl-ruby.baroquebobcat.com/)
