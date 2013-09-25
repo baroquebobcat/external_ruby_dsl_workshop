@@ -126,13 +126,17 @@ Another common pattern are Production Rule Systems. An example in Ruby / Rails w
 * DSLs add another thing to learn to a project. Learning a new language on top of groking a whole project could be challenging to new people. On the other hand, DSLs can more susinctly describe a problem domain, _and_ the domain is what is complicated.
 * Maintenance: When you write a DSL, if it gets used a lot, you will have to maintain it. That means dealing with versioning, deprecation, etc--everything a language designer deals with.
 
-# What We're Doing.
+# What We're Doing Today
 
-## one plus one
+I'm going to use a calculator language as an example here, just for simplicity.
+
+We're taking a string like this:
 
 ```ruby
 1 + 2
 ```
+
+Turning it into a tree like this:
 
 <script type="text/graphviz">
 digraph hello {
@@ -142,15 +146,21 @@ digraph hello {
 }
 </script>
 
-```ruby
-Add.new Int.new("1"), Int.new("2")
-```
+And then turning that tree into a semantic model that looks like this:
 
 ```ruby
-#=> 3
+ calc = Add.new Int.new("1"), Int.new("2")
 ```
 
-# Hello World Transitions
+Then once we have a semantic model, we can calculate things with it. In this instance, the number 3.
+
+```ruby
+calc.value #=> 3
+```
+
+# State Transitions Transitions
+
+Building a DSL or a regular old compiler is all about writing code to transition data between each of those different forms. We're going to be writing a parser to get a tree to populate a semantic model so that we can compute interesting things.
 
 ```
 (0) -> (1) Tree Construction
@@ -187,54 +197,15 @@ int.as(:left) >> plus.as(:add) >> int.as(:right)
 > `rule` takes a pattern that matches portions of the intermediate tree, & then runs the resulting block on that subtree.
 
 
-#Walking Skeleton
+# Semantic Model
 
-```
+The semantic model is a group of objects that represent the semantics of the thing you are representing with your DSL. It encapsulates the meaning of the computation we are trying to do. For our calculator example, the semantic model we built from `1+2` can compute the addition represented by the DSL.
 
+It's what you are actually trying to model. In Arel, it would be the Relation or Query objects. In a state machine it would be the states and their transitions.
 
-                 .-"```"-.
-                /         \
-                |  _   _  |
-                | (_\ /_) |
-                (_   A   _)
-                 | _____ |
-                 \`"""""`/
-                  '-.-.-'
-                   _:=:_                   \\|
-            .-""""`_'='_`""""-.           \///
-           (`,-- -`\   /`- --,`)          (`/
-           / //`-_--| |--_-`\\ \         .//
-          / /(_-_  _| |_  _-_)\ \       ///
-         / / (_- __ \ / __ -_) \ \     ///
-        / /  (_ -_ - ^ - _- _)  \ \   ///
-       / /   (_-  _ /=\ _ - _)   \ \ '//
-      / /     (_ -.':=:'. -_)     \ \//
-     (`;`     (_-'  :=:  '-_)      (_,'
-      \\.   jgs __  :=:  __
-       \\\    .'  `':=:'`  '.
-        \\\  |  .--. = .--.  |
-         \\\ |  (  / = \  )  |
-          \\` \ _`' \=/ '`_ /
-          ;`)  ( ;_/`v`\_; )
-          |||\ | |       | |
-          |\\  | |       | |
-               | |       | |
-               | |       | |
-               | |       | |
-               | |       | |
-               | |       | |
-              (._)       (_.)
-               ||,       ,||
-               ||:       :||
-               ||:       :||
-               ||:       :||
-               ||:       :||
-               ||'       '||
-              ///)       (\\\
-            .///`         `\\\.
-           `//`             `\\`
-```
-[source](http://www.retrojunkie.com/asciiart/health/skeleton.htm)
+If you know Domain Driven Design, a Semantic Model is like a Domain Model, but it doesn't have to have behavior, it could just be a data structure.
+
+Sometimes you write the Semantic Model first, to nail down, in a command-query way, the things you want to do, and then figure out what the DSL is going to look like.
 
 #Break
 
