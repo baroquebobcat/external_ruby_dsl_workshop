@@ -1,5 +1,11 @@
-@import url(https://fonts.googleapis.com/css?family=Quicksand:400,700,400italic,700italic);
+/*@import url(https://fonts.googleapis.com/css?family=Quicksand:400,700,400italic,700italic);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
+*/
+
+@import url(/css/theme/sky_fonts_1.css);
+@import url(/css/theme/sky_fonts_2.css);
+
+
 /**
  * Sky theme for reveal.js.
  *

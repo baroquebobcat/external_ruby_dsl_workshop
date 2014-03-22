@@ -29,263 +29,1045 @@
     <div class="reveal">
     <div class="slides">
       <section>
-  <h1>External DSLs in Ruby</h1>
+  <h1>Generate Parsers! Prevent Exploits!</h1>
 </section>
 <section>
-  <p><img alt="gnip" src="../images/GnipLogo.png" /></p>
+  <h1>Or</h1>
 </section>
 <section>
-  <h1>Logistics & Schedule</h1>
+  <h1>LangSec for Ruby Devs</h1>
 </section>
 <section>
-  <div style='width:100%;height:100%'></div>
-  <ul>
-  <li>Overview of DSLs</li>
-  <li>Building a Walking Skeleton</li>
-  <li>Adding More Features
+  <h1>Or</h1>
+</section>
+<section>
+  <h1>Hey!</h1>
+  <h1>Theory of Computation</h1>
+  <h1>is relevant to Web Development</h1>
+  <h2 class='fragment'>(maybe)</h2>
+</section>
+<section>
+  <h1>What?</h1>
+  <h2 class='fragment'>exploits!</h2>
+  <h2 class='fragment'>formal languages!</h2>
+  <h2 class='fragment'>generating parsers!</h2>
+  <aside class='notes'>
+    Today I'm going to talk about exploits. How they relate to formal languages. How generating parsers for said formal languages can help to reduce your apps vulnerability to exploits.
+    Also ducks and geese.
+    get it? duck duck goose <pic?>
+  </aside>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/5126832913_ducklings.jpg'>
   <br>
+  <a href='http://www.flickr.com/photos/14584356@N08/5126832913'>source</a>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/4655500165_smily_duck.jpg'>
   <br>
-  <em>Breaks every hour or so</em></li>
-  </ul>
+  <a href='http://www.flickr.com/photos/madmcmojo/4655500165/'>source</a>
+</section>
+<section class='fullscreen'>
+  <img src='/images/geese/10501479265_distainful_goose.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/rainbowy/10501479265/'>source</a>
 </section>
 <section>
-  <h1>Overview</h1>
+  <h1>Exploits! They Suck!</h1>
 </section>
 <section>
-  <h2>Rocking the workshop</h2>
+  <h1>Having an app exploited sucks</h1>
 </section>
 <section>
-  <h2>Ask Questions</h2>
+  <h1>Attackers find</h1>
+  <h2 class='fragment'>Chink in armor</h2>
+  <h2 class='fragment'>hole in the wall</h2>
+  <h2 class='fragment'>crack in the dam</h2>
+  <h2 class='fragment'>analogy in analogy</h2>
+  <h2 class='fragment'>Achilles Heel</h2>
 </section>
 <section>
-  <h2>Type along w/ me</h2>
+  <h1>Attackers get</h1>
+  <h2 class='fragment'>crown jewels</h2>
+  <h2 class='fragment'>DB, eval</h2>
+  <h2 class='fragment'>shell</h2>
+  <h2 class='fragment'>ROOT!!</h2>
+  <h2 class='fragment'>the whole kit n' caboodle</h2>
 </section>
 <section>
-  <h1>Notes</h1>
-  <h1>bit.ly/ext-dsl-ruby-2</h1>
+  <h1>PSA:</h1>
+  <h1 class='fragment'>Your passwords are hashed and salted, Right?</h1>
 </section>
 <section>
-  <h1>Why</h1>
+  <h1>Exploits ~~ Tricks</h1>
+  <aside class='notes'>
+    Exploits feel like tricks.
+  </aside>
 </section>
 <section>
+  <h1>Hard to predict</h1>
+  <aside class='notes'>
+    They're hard to anticipate, and when you look at the different kinds of them, they feel
+  </aside>
+</section>
+<section>
+  <h1>Unrelated</h1>
+  <h2 class='fragment'>Buffer Overflow</h2>
+  <h2 class='fragment'>SQL Injection</h2>
+  <h2 class='fragment'>XSS</h2>
+  <h2 class='fragment'>…</h2>
+  <h2 class='fragment'>∞</h2>
+  <aside class='notes'>
+    unrelated to each other.
+    What do buffer overlows, SQL injections XSS have in common?
+    Feels overwhelming all the different ways an app can be attacked
+  </aside>
+</section>
+<section>
+  <h1>all different?</h1>
+  <aside class='notes'>
+    They seem so different
+  </aside>
+</section>
+<section>
+  <h1>
+    No
+    <span class='fragment'>!</span>
+    <span class='fragment'>!</span>
+    <span class='fragment'>!</span>
+  </h1>
+  <aside class='notes'>
+    But they're not! not !
+  </aside>
+</section>
+<section>
+  <h1>Exploits are all the same!</h1>
+  <aside class='notes'>
+    Exploits are all the same kind of thing!
+  </aside>
+</section>
+<section>
+  <h1>Unexpected Computation!</h1>
+  <aside class='notes'>
+    Exploits are just unexpected computation that exist within your application.
+  </aside>
+</section>
+<section>
+  <h1>Computation!</h1>
+  <aside class='notes'>
+    And if they're computation, we can use tools for analyzing computation to better understand them and prevent them from showing up in our applications.
+  </aside>
+</section>
+<section>
+  <h1>Theory of Computation: Hand Wave Edition</h1>
+  <img src='/images/kermit.gif'>
+  <aside class='notes'>
+    Yes, I'm talking about theory of computation.
+    See! Relevant!
+    Break out your text books and think back to those senior / grad level classes.
+  </aside>
+</section>
+<section>
+  <h1>*NOT YET*</h1>
+  <aside class='notes'>
+    ha ha, not yet. we'll get to that I promise, in a bit.
+  </aside>
+</section>
+<section>
+  <h1>Exploit != Trick</h1>
+  <aside class='notes'>
+    Exploits aren't tricks. They're just means of computing things.
+  </aside>
+</section>
+<section>
+  <h1>Exploit == Machine</h1>
+  <aside class='notes'>
+    they're computing machines. And we can think about them as computing machines
+    Since they're machines, let's talk about how they work.
+  </aside>
+</section>
+<section>
+  <h1>How does an exploit work?</h1>
+  <aside class='notes'>
+    So, what do exploits do?
+    At a really hi, almost useless level, how do exploits work?
+  </aside>
+</section>
+<section>
+  <h1>
+    <ol>
+      <li class='fragment'>Takes Input</li>
+      <li class='fragment'>??? (Does Stuff)</li>
+      <li class='fragment'>
+        <span>Output</span>
+        <span class='fragment'>/</span>
+        <span class='fragment'>profit</span>
+      </li>
+    </ol>
+    <h2 class='fragment'>(profit is important w/ exploits)</h2>
+  </h1>
+  <aside class='notes'>
+    slide contents
+    so basically that's the same as any kind of computing machine really.
+    program
+  </aside>
+</section>
+<section>
+  <h1>Same as regular program</h1>
+</section>
+<section>
+  <h1>What's different?</h1>
+  <aside class='notes'>
+    But there's a couple things that are different. Let's talk about exploit anatomy
+  </aside>
+</section>
+<section>
+  <h1>Exploit anatomy</h1>
+  <h2 class='fragment'>undefined behavior in your app</h2>
+  <h2 class='fragment'>communication channels</h2>
+  <aside class='notes'>
+    exploits are made up of two things.
+    1. areas of undefined behavior in your applications
+    2. communication channels to those areas of undefined behavior
+    ideally you don't have 1., but as we usually write programs in Turing complete environments, that's hard to prove
+    Easier is to attack number 2.
+  </aside>
+</section>
+<section>
+  <h1>Exploits live</h1>
+  <h1>inside</h1>
+  <h1>your app / framework</h1>
+  <aside class='notes'>
+    Where they live is inside your application. And because they live there, the way they get input is through your applications inputs.
+  </aside>
+</section>
+<section>
+  <h1>
+    Input Via
+    Host Application's
+    Inputs
+  </h1>
+  <aside class='notes'>
+    They have to get their input indirectly. Through your applications inputs.
+    specially crafted.
+    weirdly formatted.
+    odd operations.
+  </aside>
+</section>
+<section>
+  <h1>
+    Exploit === Weird Machine
+    *
+  </h1>
+  <h2 class='fragment'>* technical term</h2>
+  <aside class='notes'>
+    They're weird machines.
+    And yes that's _the_ technical term
+  </aside>
+</section>
+<section>
+  <script type="text/graphviz">digraph G {
+     bgcolor="transparent"
+    size = "7.5,10";
+  
+    compound=true;
+    rankdir="LR";
+    node [shape=box fontsize=10 fontname="Verdana" style="filled"];
+  
+    subgraph cluster0 {
+     // height = 100;
+      //scale = 2;
+      label = "Your App";
+      style="filled";
+      //padding [style="invis"];
+      "Exploit";
+    }
+    { node [shape=circle]; IN OUT  };
+    "Exploit" -> IN [dir=back];
+    "Exploit" -> OUT;
+  }
+  </script>
+  <aside class='notes'>
+    When an attacker wants to talk to an exploit, or see if one's there, they need to route input to that exploit through your application. So how does that work? Well,
+  </aside>
+</section>
+<section>
+  <pre class='asciiart'>App |
+    | <- IN
+    |</pre>
+  <aside class='notes'>
+    (zoomin'in)
+    When input for an exploit comes to your application
+    Your application is sent some bad input
+  </aside>
+</section>
+<section>
+  <h2>(past app code)</h2>
+  <pre class='asciiart'>App Code |
+     /---| <- IN
+     |   |
+     v   |</pre>
+  <aside class='notes'>
+    As it's processed, it somehow skips past your applications code. past the path you intended it to take, and instead goes somewhere else.
+  </aside>
+</section>
+<section>
+  <h2>(to exploit)</h2>
+  <pre class='asciiart'>     |     |
+     v     |
+  Exploit  |</pre>
+  <aside class='notes'>
+    And ends up providing input to the exploit instead.
+    You can see this in any exploit. SQL injection etc.
+    And the exploit will send output back to the attacker, and they'll be able to play with the input to see what kind of response they get and what kinds of operations the exploit supports.
+  </aside>
+</section>
+<section>
+  <script type="text/graphviz">digraph G {
+     bgcolor="transparent"
+    size = "7.5,10";
+  
+    compound=true;
+    rankdir="LR";
+    node [shape=box fontsize=10 fontname="Verdana" style="filled"];
+  
+    subgraph cluster0 {
+     // height = 100;
+      //scale = 2;
+      label = "Your App";
+      style="filled";
+      //padding [style="invis"];
+      "Exploit";
+    }
+    { node [shape=circle]; IN OUT  };
+    "Exploit" -> IN [dir=back];
+    "Exploit" -> OUT;
+  }
+  </script>
+  <aside class='notes'>
+    get out put out of it. tinker with it.
+  </aside>
+</section>
+<section>
+  <h1>stopping exploits</h1>
+  <aside class='notes'>
+    So how do you stop exploits? Easiest way is to control their inputs
+  </aside>
+</section>
+<section>
+  <h1>jam their comms!</h1>
+</section>
+<section>
+  <h1>validate inputs before use</h1>
+  <aside class='notes'>
+    If you check inputs before using them, you cut down on the undefined inputs that enable attackers to find undefined behavior in your app
+  </aside>
+</section>
+<section>
+  <h1>IN - what is it?</h1>
+  <pre class='asciiart'>App |
+    | <- IN
+    |</pre>
+  <aside class='notes'>
+    but what are these inputs?
+  </aside>
+</section>
+<section>
+  <h1>IN:</h1>
+  <h2>instructions to the exploit</h2>
+  <aside class='notes'>
+    Weird language
+    crafted input
+  </aside>
+</section>
+<section>
+  <h1>Exploit == Weird Machine</h1>
+  <aside class='notes'>
+    Remember exploits are a weird machine, so these crafted inputs are the weird instructions for that weird machine
+  </aside>
+</section>
+<section>
+  <h1>IN:</h1>
+  <h2>program in exploit-ese</h2>
+  <aside class='notes'>
+    ie a program for that weird machine
+  </aside>
+</section>
+<section>
+  <h1>asm_sql_injection anyone?</h1>
+  <aside class='notes'>
+    The input is like an assembly language, but for the specific weird machine.
+  </aside>
+</section>
+<section>
+  <h1>
+    Example:
+    <br>
+    Rails XML(type=yaml)
+  </h1>
+  <h3>CVE-2013-0156</h3>
+  <aside class='notes'>
+    Let's look at an example, the remote code exe bug from last year in rail's XML parser
+  </aside>
+</section>
+<section>
+  <script type="text/graphviz">digraph G {
+     bgcolor="transparent"
+    size = "7.5,10";
+  
+    compound=true;
+    rankdir="LR";
+    node [shape=box fontsize=10 fontname="Verdana" style="filled"];
+  
+    subgraph cluster0 {
+     // height = 100;
+      //scale = 2;
+      label = "Rails";
+      style="filled";
+      //padding [style="invis"];
+  
+      subgraph cluster1 {
+       // height = 100;
+        //scale = 2;
+        label = "XML Parser";
+        style="filled";
+        //padding [style="invis"];
+        "Exploit via YAML";
+      }
+    }
+    { node [shape=circle]; IN OUT  };
+    "Exploit via YAML" -> IN [dir=back];
+    "Exploit via YAML" -> OUT;
+  }
+  </script>
+  <aside class='notes'>
+    Within the XML parser was some ill defined behavior that allowed yaml as an XML content type.
+    yaml isn't safe--you can create Ruby objects of arbitrary classes--which allowed access to eval
+  </aside>
+</section>
+<section>
+  <h2>(not actual program)</h2>
+  <pre class="highlight xml"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="nt">&lt;yaml</span> <span class="na">type=</span><span class="s">&quot;yaml&quot;</span><span class="nt">&gt;</span>&#x000A;---- !ruby/object:Evil&#x000A;  hi: eval_me&#x000A;<span class="nt">&lt;/yaml&gt;</span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <h1>...</h1>
+</section>
+<section>
+  <h1>Running Ruby!</h1>
+</section>
+<section>
+  <h1>:-(</h1>
+</section>
+<section>
+  <img src='/images/geese/132425620_yelling_goose.jpg'>
+</section>
+<section>
+  <h1>PSA:</h1>
+  <h1 class='fragment'>Everybody's patched, right?</h1>
+</section>
+<section>
+  <h1>What's the real problem here?</h1>
+</section>
+<section>
+  <h1>Bad Input validation!</h1>
+  <aside class='notes'>
+    these problems are caused by accepting inputs that your application handles incorrectly.
+    and by doing interesting things with those inputs before you know what they are
+  </aside>
+</section>
+<section>
+  <h1>What's the fix</h1>
+  <h2 class='fragment'>Good Input Validation!</h2>
+</section>
+<section>
+  <h1>No Bad input allowed!</h1>
+</section>
+<section>
+  <h1>But How?</h1>
+</section>
+<section>
+  <h1>recognize inputs completely before processing them</h1>
+  <aside class='notes'>
+    then if theyr good, we know we can do the right thing and if theyr bad, we can succeed in rejecting them!
+  </aside>
+</section>
+<section>
+  <h1>LangSec</h1>
+  <aside class='notes'>
+    mentioned breifly in title, but other than that not yet
+  </aside>
+</section>
+<section>
+  <h1>Language Theoretic Security</h1>
+  <aside class='notes'>
+    lang sec started by a small group of security researchers relatively recently
+    idea is to apply theory of computation principles regarding formal languages to describe the problem of securing protocols and network activities
+    I think this is applicable not only to low level network protocol design but also application inputs.
+    I got interested in lang sec in 2012 when I saw a talk at an infosec conference called Shmoocon by Meredith L Patterson. It was awesome.
+  </aside>
+</section>
+<section>
+  <h1>recognize inputs completely before processing them</h1>
+  <aside class='notes'>
+    that last just before introducing langsec is one of the important things langsec emphasizes.
+    recognizing good input before acting on it reduces your apps undefined behaviors
+  </aside>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/4655500165_smily_duck.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/madmcmojo/4655500165/'>source</a>
+  <aside class='notes'>
+    recognizing is just ducky for security
+  </aside>
+</section>
+<section>
+  <h1>recognize inputs completely before processing them</h1>
+  <aside class='notes'>
+    ok great, we need to check first, but how do we recognize what input is good or bad?
+  </aside>
+</section>
+<section>
+  <h1>Recognize?</h1>
+</section>
+<section>
+  <h1>Are you talking about decidability?</h1>
+</section>
+<section>
+  <h1>yep</h1>
+</section>
+<section>
+  <h1>Theory of Computation: Hand Wave Edition</h1>
+  <img src='/images/kermit.gif'>
+</section>
+<section>
+  <h1>Chapter 0: Decidability</h1>
+</section>
+<section>
+  <h1>In a formal system, do all statements in that system have a yes or no answer?</h1>
+  <aside class='notes'>
+    decidability is all about answer this
+    Let's see an example
+  </aside>
+</section>
+<section>
+  <h1>an example</h1>
+  <aside class='notes'>
+    in the natural language known as english
+  </aside>
+</section>
+<section>
+  <h1>"This statement is false."</h1>
+  <aside class='notes'>
+    In english, clearly, there are statements that are neither yes or no-able.
+  </aside>
+</section>
+<section>
+  <h1>halting problem</h1>
+  <h1 class='fragment'>undecidable</h1>
+  <aside class='notes'>
+    Turing et al did a bunch of math and proved that formal systems with certain properties can have unprovable statements.
+    he used something call the halting problem to describe it.
+  </aside>
+</section>
+<section>
+  <h1>/handwave</h1>
+</section>
+<section>
+  <h1>Undecidable problems exist</h1>
+  <h1 class='fragment'>what about input validation?</h1>
+  <aside class='notes'>
+    Okay, great, there are undecidable problems that exist, but we need to secure our app. Can we decide whether a given input is good or bad?
+  </aside>
+</section>
+<section>
+  <h1>:-(</h1>
+</section>
+<section>
+  <h1>for certain types of input, recognizing is undecidable</h1>
+</section>
+<section>
+  <img src='/images/geese/132425620_yelling_goose.jpg'>
+</section>
+<section>
+  <h1>being sure an input won't trigger exploit:</h1>
+  <h1 class='fragment'>impossible</h1>
+</section>
+<section>
+  <img src='/images/geese/7306896928_goose_attack.jpg'>
+</section>
+<section>
+  <h1>"certain types"</h1>
+  <aside class='notes'>
+    So what types are decidable and what types aren't? How do we tell the difference?
+  </aside>
+</section>
+<section>
+  <h1>Theory of Computation: Hand Wave Edition</h1>
+  <img src='/images/kermit.gif'>
+</section>
+<section>
+  <h1>Chapter 1: Formal Languages</h1>
+</section>
+<section>
+  <h1>Chomsky Hierarchy</h1>
+  <img src='/images/c_hierarchy.png'>
+  <aside class='notes'>
+    This is the chomsky hierarchy
+    If you've ever taken a compilers course you probably covered it in depth. I'm not doing that. I'm just going to talk about each real quick
+  </aside>
+</section>
+<section>
+  <h1>Regular</h1>
+  <h2>Boring and Safe</h2>
+  <h2>No matching parens</h2>
+  <h2>features: delimiters</h2>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/5126832913_ducklings.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/14584356@N08/5126832913'>source</a>
+</section>
+<section>
+  <h1>Context Free</h1>
+  <h2>less boring, mostly safe</h2>
+  <h2>features: {(nesting)}</h2>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/4655500165_smily_duck.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/madmcmojo/4655500165/'>source</a>
+</section>
+<section>
+  <h1>Context Sensitive</h1>
+  <h2>less boring, mostly safe</h2>
+  <h2>features: field length prefixes allowed</h2>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/8614455783_scary_duck.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/hmclin/8614455783/'>source</a>
+</section>
+<section>
+  <h1>Recursively Enumerable</h1>
+  <h2>can describe turing machine</h2>
+  <h2>most powerful</h2>
+  <aside class='notes'>
+    cool when programming,
+    but dont want to expose to someone on the internet
+  </aside>
+</section>
+<section class='fullscreen'>
+  <img src='/images/geese/5547247039_braaak_goose.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/plashingvole/5547247039/'>source</a>
+</section>
+<section>
+  <h1>Chomsky Hierarchy</h1>
+  <img src='/images/c_hierarchy.png'>
+</section>
+<section>
+  <h1>Chapter 1.a: Formal Language Recognition</h1>
+  <aside class='notes'>
+    what do these have to do w/ security?
+    what we're really interested in from a sec stand pt is recognition
+  </aside>
+</section>
+<section>
+  <h1>Decidability of formal language recognition</h1>
+  <img src='/images/c_hierarchy_decide_recognition.png'>
+  <aside class='notes'>
+    here's what the hierarchy looks like w/ the languages that you can recognize decidably.
+    It's most of them.
+  </aside>
+</section>
+<section>
+  <h1>Recursively Enumerable</h1>
+  <h2>can describe turing machine</h2>
+  <h2>most powerful</h2>
+  <aside class='notes'>
+    RE is also known as the unrestricted grammar. It has all the things. As it has all the things, parsing it is equivalent to simulating a turing machine.
+    eg if you take a programming language as input and then execute it!
+  </aside>
+</section>
+<section class='fullscreen'>
+  <h1>Goose has root</h1>
+  <img src='/images/geese/5547247039_braaak_goose.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/plashingvole/5547247039/'>source</a>
+</section>
+<section>
+  <h1>Context Sensitive</h1>
+  <h1>or below</h1>
+  <h1 class='fragment'>Decidable</h1>
+  <aside class='notes'>
+    all the others are decidable, so that's cool.
+    decidable languages include most things you would reasonably use like JSON, that said particular instances of JSON / XML are not necessarily decidable
+  </aside>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/4655500165_smily_duck.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/madmcmojo/4655500165/'>source</a>
+</section>
+<section>
+  <h1>Chapter 1.b: Comparing Formal Language Parsers</h1>
+</section>
+<section>
+  <h1>Context Free has two parts</h1>
+  <h2 class='fragment'>Deterministic</h2>
+  <h2 class='fragment'>Non-Deterministic</h2>
+</section>
+<section>
+  <h2>deterministic context-free</h2>
+  <h2>comparing parser equivalency:</h2>
+  <h2 class='fragment'>decidable</h2>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/4655500165_smily_duck.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/madmcmojo/4655500165/'>source</a>
+</section>
+<section>
+  <h1>Woah</h1>
+  <img class='fragment' src='/images/c_hierarchy_D_ND_CF.png'>
+  <aside class='notes'>
+    RE is ruby
+    yaml also there
+    html w/ script RE ish
+    D-CF JSON!!
+    XML?? context sensitive I think, depending on the schema
+  </aside>
+</section>
+<section class='fullscreen'>
+  <img src='/images/ducks/4655500165_smily_duck.jpg'>
+</section>
+<section>
+  <h1>recognize inputs completely before processing them</h1>
+  <aside class='notes'>
+    so where were we, oh yeah. lang sec sez qt slide
+  </aside>
+</section>
+<section>
+  <h1>use deterministic context-free languages (or less) as inputs</h1>
+  <aside class='notes'>
+    WIN: use deterministic context-free languages (or less) as inputs
+    *least powerful thing you can get away with
+    * prefer JSON over XML (because JSON is deterministic context-free)
+  </aside>
+</section>
+<section>
+  <h1>LangSec no noes</h1>
   <h2>
     <ul>
-    <li>Know when to use DSLs</li>
-    <li>Know how to build DSLs</li>
-    <li>Learn compilery stuff</li>
+      <li>Turing Complete Inputs</li>
+      <li>ad hoc input validation</li>
+      <li>weak parsers checking strong languages</li>
     </ul>
   </h2>
 </section>
 <section>
-  <h1>DSLs</h1>
+  <h1>Turing Complete Inputs</h1>
+</section>
+<section class='biggest'>
+  <blockquote>
+    "This system is very extendable/updatable
+    because it embeds macros/scripting/programming language in data" --run like hell
+  </blockquote>
+  <p>-- Science of Insecurity</p>
+  <aside class='notes'>
+    to quote Meredith's Science of Insecurity
+    maybe that'll give you a clue
+    eg XML(YAML)
+  </aside>
+</section>
+<section>
+  <h1>ad hoc input validation</h1>
+  <aside class='notes'>
+    when validation & parsing scattered, the machine that does parsing has many more states and potential undefined behaviors
+  </aside>
+</section>
+<section>
+  <h1>AKA Shotgun parsing</h1>
+  <img src='/images/shot_pattern.jpg'>
+  <aside class='notes'>
+    because parsing's all over the code
+  </aside>
+</section>
+<section>
+  <h1>weak parsers</h1>
+  <h1>checking</h1>
+  <h1>strong languages</h1>
+</section>
+<section>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="k">if</span> <span class="n">in_xml</span> <span class="o">=~</span> <span class="sr">/valid-codes/</span>&#x000A;  <span class="n">fire_z_missiles</span><span class="p">(</span><span class="n">in_xml</span><span class="p">)</span>&#x000A;<span class="k">end</span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <h1>TL;DR Use JSON</h1>
+</section>
+<section>
+  <h1>WRT Rails</h1>
+  <aside class='notes'>
+    Okay. Cool. I use Rails. Am I safe? How do I even???
+    Rails already deals with this in a lot of different ways. (list a couple quickly)
+    eg HTML sanitization
+    the reason the xml yaml thing happened is that rails has this big parsing infratracture that sits way in front of your application. it's a big black box.
+  </aside>
+</section>
+<section>
+  <h1>parsing too early, too generally</h1>
+</section>
+<section>
+  <pre class='asciiart'>        |  IN      |
+  Rails |[parse   ]|
+        |          |
+  ------+----------+
+  App   |[validate]|
+        |[ use    ]|</pre>
+  <aside class='notes'>
+    it parses waaaay before your validation code runs.
+    it also parses even if you're not using the thing it's parsing.
+    If there's a bug/exploit in the parser,
+    it'll happen before your application code even sees the input.
+  </aside>
+</section>
+<section>
+  <pre class='asciiart'>        |  IN      |
+  Rails |          |
+  ------+----------+
+  App   |[parse   ]|
+        |[validate]|
+        |[ use    ]|</pre>
+</section>
+<section>
+  <h1>Goal:</h1>
+  <h2 class='fragment'>rm -rf undefined_behavior</h2>
+</section>
+<section>
+  <h1>don't allow undefined inputs!</h1>
+</section>
+<section>
+  <h1>↶</h1>
+</section>
+<section>
+  <h1>Only allow defined inputs!</h1>
+</section>
+<section>
+  <h1>Patched Postel Principle</h1>
+  <pre class="highlight diff"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div><div class="lineno">8</div><div class="lineno">9</div><div class="lineno">10</div><div class="lineno">11</div><div class="lineno">12</div><div class="lineno">13</div><div class="lineno">14</div><div class="lineno">15</div><div class="lineno">16</div><div class="lineno">17</div><div class="lineno">18</div><div class="lineno">19</div><div class="lineno">20</div><div class="lineno">21</div><div class="lineno">22</div><div class="lineno">23</div><div class="lineno">24</div><div class="lineno">25</div><div class="lineno">26</div><div class="lineno">27</div><div class="lineno">28</div><div class="lineno">29</div></td><td class="code"><span class="err">The Postel Principle Patch:
+  
+  </span><span class="gd">--- ietf/postels-principle
+  </span><span class="gi">+++ ietf/postels-principle
+  </span>  
+  <span class="gd">- Be liberal about what you accept.
+  </span><span class="err">
+  </span><span class="gi">+ Be definite about what you accept.(*) 
+  +
+  + Treat inputs as a language, accept it with a matching computational
+  + power, generate its recognizer from its grammar.
+  +
+  + Treat input-handling computational power as privilege, and reduce it
+  + whenever possible.
+  +
+  +
+  + (*) For the sake of your users, be definite about what you accept.
+  + Being liberal worked best for simpler protocols and languages,
+  + and is in fact limited to such languages; be sure to keep your
+  + language regular or at most context free (no length fields).    
+  + Being more liberal did not work so well for early IPv4 stacks: 
+  + they were initially vulnerable to weak packet parser attacks, and 
+  + ended up eliminating many options and features from normal use. 
+  + Furthermore, presence of these options in traffic came to be regarded 
+  + as a sign of suspicious or malicious activities, to be mitigated by 
+  + traffic normalization or outright rejection. At current protocol 
+  + complexities, being liberal actually means exposing the users of your 
+  + software to intractable or malicious computations.
+  </span></td></tr></tbody></table></pre>
+  <p><a href="http://langsec.org/postel-principle-patch.txt">cite</a></p>
+</section>
+<section>
+  <h2>
+    <blockquote>Be definite about what you accept.(*)</blockquote>
+  </h2>
 </section>
 <section>
   <h2>
     <blockquote>
-    <p>Domain-specific language (noun): a computer programming language of limited 
-    expressiveness focused on a particular domain.</p>
+      Treat inputs as a language, accept it with a matching computational power, generate its recognizer from its grammar.
     </blockquote>
-    
-    <p>-- <a href="http://martinfowler.com/dsl.html">Martin Fowler</a></p>
   </h2>
-</section>
-<section>
-  <h1>Whole bunches of them</h1>
 </section>
 <section>
   <h2>
-    haml, sass, arel,
-    jQuery, SQL, graphviz,
-    regex, rake, make, rspec, Gherkin ...
+    <blockquote>
+      Treat input-handling computational power as privilege, and reduce it whenever possible.
+    </blockquote>
   </h2>
 </section>
 <section>
-  <h1>Internal vs External</h1>
+  <h1>Defining inputs...</h1>
+  <h2 class='fragment'>Isn't that a pain?</h2>
 </section>
 <section>
-  <h1>Haml vs Builder</h1>
+  <h1>
+    <span>Yes!</span>
+    <span class='fragment'>yes it is!</span>
+  </h1>
 </section>
 <section>
-  <h2>Builder</h2>
-  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div></td><td class="code"><span class="n">builder</span> <span class="o">=</span> <span class="no">Builder</span><span class="o">::</span><span class="no">XmlMarkup</span><span class="nf">.new</span>
-  <span class="n">builder</span><span class="nf">.section</span><span class="p">(</span><span class="ss">class: </span><span class="s2">&quot;container&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">b</span><span class="o">|</span>
-    <span class="n">b</span><span class="nf">.h1</span> <span class="s2">&quot;title&quot;</span>
-    <span class="n">b</span><span class="nf">.h2</span> <span class="s2">&quot;subtitle&quot;</span>
-    <span class="n">b</span><span class="nf">.div</span><span class="p">(</span><span class="s2">&quot;some content&quot;</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">&quot;content&quot;</span><span class="p">)</span>
-  <span class="k">end</span>
-  </td></tr></tbody></table></pre>
+  <h1>But, we already do!</h1>
 </section>
 <section>
-  <h2>Haml</h2>
-  <pre class="highlight haml"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code"><span class="nt">%section</span><span class="nc">.container</span>
-    <span class="nt">%h1</span><span class="p">=</span> <span class="s2">&quot;title&quot;</span>
-    <span class="nt">%h2</span><span class="p">=</span> <span class="s2">&quot;subtitle&quot;</span>
-    <span class="nc">.content</span>
-      <span class="p">=</span> <span class="s2">&quot;some content&quot;</span>
-  </td></tr></tbody></table></pre>
+  <h1>Rails input validation</h1>
+  <h2 class='fragment'>Rails 3 attr_accessible</h2>
 </section>
 <section>
-  <h2>External DSL == Less Syntax</h2>
+  <h1>Rails 3 attr_accessible</h1>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="n">attr_accessible</span> <span class="ss">:name</span>&#x000A;<span class="n">attr_accessible</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:credit_rating</span><span class="p">,</span>&#x000A;                <span class="ss">:as</span> <span class="o">=&gt;</span> <span class="ss">:admin</span>&#x000A;</td></tr></tbody></table></pre>
+  <p><a href="http://apidock.com/rails/ActiveModel/MassAssignmentSecurity/ClassMethods/attr_accessible">api docs</a></p>
 </section>
 <section>
-  <h1>SQL-isms</h1>
-</section>
-<section>
-  <h2>Plain Ruby</h2>
-  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div></td><td class="code"><span class="n">tables</span><span class="o">[</span><span class="s2">&quot;persons&quot;</span><span class="o">]</span><span class="nf">.select</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;favorite_food&quot;</span><span class="o">]==</span><span class="s2">&quot;bananas&quot;</span><span class="p">}</span><span class="o">.</span>
-                <span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="nb">p</span><span class="o">|</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="nb">p</span><span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">age: </span><span class="nb">p</span><span class="o">[</span><span class="s2">&quot;age&quot;</span><span class="o">]</span><span class="p">}</span><span class="o">.</span>
-                <span class="n">first</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-  </td></tr></tbody></table></pre>
-</section>
-<section>
-  <h2>Rails</h2>
-  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div></td><td class="code"><span class="no">Person</span><span class="nf">.where</span><span class="p">(</span><span class="ss">favorite_food: </span><span class="s1">&#39;bananas&#39;</span><span class="p">)</span><span class="o">.</span>
-         <span class="nb">select</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="ss">:age</span><span class="p">)</span><span class="nf">.limit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-  </td></tr></tbody></table></pre>
-</section>
-<section>
-  <h2>SQL</h2>
-  <pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
-  <span class="k">FROM</span> <span class="n">persons</span>
-  <span class="k">WHERE</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
-  <span class="k">LIMIT</span> <span class="mi">10</span>
-  </td></tr></tbody></table></pre>
-</section>
-<section>
-  <h1>When to use a DSL</h1>
-</section>
-<section>
-  <ul>
-  <li>constrain to domain</li>
-  <li>communication</li>
-  <li>representing alt comp models</li>
-  </ul>
-</section>
-<section>
-  <h1>Common DSL patterns</h1>
-</section>
-<section>
-  <ul>
-  <li>Production Rules</li>
-  <li>State Machines</li>
-  <li>Hierarchical Datastructures</li>
-  </ul>
-</section>
-<section>
-  <h1>DSL Parts</h1>
-</section>
-<section>
-  <h2>
-    <ul>
-    <li>Parser / Internal DSL</li>
-    <li>Semantic Model</li>
-    <li>Execution / Code Generation</li>
-    </ul>
-  </h2>
-</section>
-<section>
-  <h2>Parser / Internal DSL</h2>
-</section>
-<section>
-  <h2>Semantic Model</h2>
-</section>
-<section>
-  <h2>Execution / Code Generation</h2>
-</section>
-<section>
-  <h1>What We're Doing Today</h1>
-</section>
-<section>
-  <h2>Take a String in our DSL</h2>
-  <pre class="highlight sql"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">age</span>
-  <span class="k">FROM</span> <span class="n">persons</span>
-  <span class="k">WHERE</span> <span class="n">favorite_food</span> <span class="o">=</span> <span class="s1">&#39;bananas&#39;</span>
-  <span class="k">LIMIT</span> <span class="mi">10</span>
-  </td></tr></tbody></table></pre>
-</section>
-<section>
-  <h2>Convert it into a tree</h2>
-  <script type="text/graphviz">digraph{
-    query -> args;
-    query -> from;
-    query -> where;
-    query -> limit;
-    args ->  arg_0;
-    args ->  arg_1;
-    where -> equality;
-    from[shape="record"; label="FROM|persons"];
-    
-    where[label="Where"];
-    arg_0[shape="record"; label="col|name"];
-    arg_1[shape="record"; label="col|age"];
-    equality[shape="record"; label="lhs|favorite_food|rhs|'bananas'"];
-    limit[shape="record"; label="LIMIT|10"];
+  <script type="text/graphviz">digraph {
+     bgcolor="transparent"
+    node [style=filled];
+    rankdir="LR";
+    bytes -> "hashes n arrays";
+    "hashes n arrays" -> controller;
+    controller -> model [label="Input Checked Here", labelloc=b];
   }
   </script>
 </section>
 <section>
-  <h2>Convert that into a semantic model</h2>
-  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div></td><td class="code"><span class="n">q</span> <span class="o">=</span> <span class="no">SelectQuery</span><span class="nf">.new</span><span class="p">(</span>
-    <span class="no">Args</span><span class="nf">.new</span><span class="p">(</span><span class="no">Field</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="no">Field</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">)),</span>
-    <span class="no">From</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">),</span>
-    <span class="no">Where</span><span class="nf">.new</span><span class="p">(</span>
-      <span class="no">Equality</span><span class="nf">.new</span><span class="p">(</span><span class="no">FieldAccess</span><span class="nf">.new</span><span class="p">(</span><span class="s2">&quot;favorite_food&quot;</span><span class="p">,</span> <span class="s2">&quot;bananas&quot;</span><span class="p">))),</span>
-    <span class="no">Limit</span><span class="nf">.new</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-  <span class="p">)</span>
-  </td></tr></tbody></table></pre>
+  <h1>pluses</h1>
+  <h2 class='fragment'>all access controlled</h2>
+  <h2 class='fragment'>blows up on bad keys</h2>
 </section>
 <section>
-  <h2>Run it</h2>
-  <div class='bigger'>
-    <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div></td><td class="code"><span class="n">q</span><span class="nf">.execute_with</span> <span class="n">db</span>
-    </td></tr></tbody></table></pre>
+  <h1>minuses</h1>
+  <h2 class='fragment'>definition / usage in different locations</h2>
+  <h2 class='fragment'>different use case handling</h2>
+</section>
+<section>
+  <h1>Rails input validation</h1>
+  <h2>Rails 3 attr_accessible</h2>
+  <h2 class='fragment'>Rails 4 Strong Parameters</h2>
+</section>
+<section>
+  <h1>Rails 4 Strong Parameters</h1>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="n">params</span><span class="nf">.require</span><span class="p">(</span><span class="ss">:person</span><span class="p">)</span><span class="o">.</span>&#x000A;    <span class="n">permit</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="ss">:age</span><span class="p">,</span>&#x000A;           <span class="ss">pets_attributes: &#x000A;             </span><span class="o">[</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:category</span> <span class="o">]</span><span class="p">)</span>&#x000A;</td></tr></tbody></table></pre>
+  <p><a href="http://edgeapi.rubyonrails.org/classes/ActionController/StrongParameters.html">api docs</a></p>
+</section>
+<section>
+  <script type="text/graphviz">digraph {
+     bgcolor="transparent"
+    node [style=filled];
+    rankdir="LR";
+    bytes -> "hashes n arrays";
+    "hashes n arrays" -> controller  [label="Input Checked Here", labelloc=b];
+    controller -> model;
+  }
+  </script>
+</section>
+<section>
+  <h1>Pluses</h1>
+  <h2 class='fragment'>definition / usage in same location</h2>
+  <h2 class='fragment'>schema allows for nesting</h2>
+</section>
+<section>
+  <h1>minuses</h1>
+  <h2 class='fragment'>silently strips unpermitted keys</h2>
+  <h2 class='fragment'>Schema is ambiguous</h2>
+</section>
+<section>
+  <h1>Why not earlier?</h1>
+</section>
+<section>
+  <script type="text/graphviz">digraph {
+     bgcolor="transparent"
+    node [style=filled];
+    rankdir="LR";
+    bytes -> "hashes n arrays" [label="Input Checked Here", labelloc=b];
+    "hashes n arrays" -> controller ;
+    controller -> model;
+  }
+  </script>
+</section>
+<section class='fullscreen'>
+  <p><img alt="muskox" src="../images/muskox_logo.png" /></p>
+</section>
+<section>
+  <h2>Muskox is a schema based Parser Generator</h2>
+</section>
+<section>
+  <h2>Give it a JSON Schema definition</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div><div class="lineno">6</div><div class="lineno">7</div></td><td class="code">  <span class="kp">extend</span> <span class="no">Muskox</span><span class="o">::</span><span class="no">Extensions</span>&#x000A;      <span class="n">add_parser</span>    <span class="ss">:user</span><span class="p">,</span>&#x000A;        <span class="ss">type:       :object</span><span class="p">,</span>&#x000A;        <span class="ss">properties: </span><span class="p">{</span>&#x000A;          <span class="nb">name</span><span class="p">:</span>  <span class="p">{</span> <span class="ss">type: :string</span> <span class="p">},</span>&#x000A;          <span class="ss">email: </span><span class="p">{</span> <span class="ss">type: :string</span> <span class="p">}</span>&#x000A;        <span class="p">}</span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <h1>And it will only allow valid strings to be parsed</h1>
+</section>
+<section>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="no">MyParsers</span><span class="nf">.parsers</span><span class="o">[</span><span class="ss">:user</span><span class="o">].</span>&#x000A;  <span class="n">parse</span><span class="p">(</span>&#x000A;  <span class="sx">%!{&quot;name&quot;:&quot;me&quot;, &quot;email&quot;:&quot;x@y.com&quot;}!</span><span class="p">)</span>&#x000A;<span class="c1"># =&gt; {&quot;name&quot;=&gt;&quot;me&quot;, &quot;email&quot;=&gt;&quot;x@y.com&quot;} </span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div><div class="lineno">5</div></td><td class="code"><span class="no">MyParsers</span><span class="nf">.parsers</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span><span class="nf">.parse</span><span class="p">(</span>&#x000A;  <span class="sx">%!{&quot;hash_dos1&quot;:1, &quot;hash_dos2&quot;:1, &quot;hash_dos3&quot;:1}!</span><span class="p">)</span>&#x000A;<span class="c1"># Muskox::ParserError: </span>&#x000A;<span class="c1">#   Unexpected property: [hash_dos1] at root.</span>&#x000A;<span class="c1">#   Allowed properties: [name, email]</span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <h1>Structure</h1>
+</section>
+<section>
+  <h1>Break Parser in Two</h1>
+  <div class='graph fragment'>
+    <script type="text/graphviz">digraph {
+       bgcolor="transparent"
+      node [style=filled];
+      rankdir="LR";
+      tokenizer -> validator;
+    }
+    </script>
   </div>
 </section>
 <section>
-  <h2>Walking Skeleton</h2>
-  <pre class='skeleton'>|
-                   .-"```"-.
-                  /         \
-                  |  _   _  |
-                  | (_\ /_) |
-                  (_   A   _)
-                   | _____ |
-                   \`"""""`/
-                    '-.-.-'
-                     _:=:_                   \\|
-              .-""""`_'='_`""""-.           \///
-             (`,-- -`\   /`- --,`)          (`/
-             / //`-_--| |--_-`\\ \         .//
-            / /(_-_  _| |_  _-_)\ \       ///
-           / / (_- __ \ / __ -_) \ \     ///
-          / /  (_ -_ - ^ - _- _)  \ \   ///
-         / /   (_-  _ /=\ _ - _)   \ \ '//
-        / /     (_ -.':=:'. -_)     \ \//
-       (`;`     (_-'  :=:  '-_)      (_,'
-        \\.   jgs __  :=:  __
-         \\\    .'  `':=:'`  '.
-          \\\  |  .--. = .--.  |
-           \\\ |  (  / = \  )  |
-            \\` \ _`' \=/ '`_ /
-            ;`)  ( ;_/`v`\_; )
-            |||\ | |       | |
-            |\\  | |       | |
-                 | |       | |
-                 | |       | |
-                 | |       | |
-                 | |       | |
-                 | |       | |
-                (._)       (_.)
-                 ||,       ,||
-                 ||:       :||
-                 ||:       :||
-                 ||:       :||
-                 ||:       :||
-                 ||'       '||
-                ///)       (\\\
-              .///`         `\\\.
-             `//`             `\\`
-  <p><a href="http://www.retrojunkie.com/asciiart/health/skeleton.htm">source</a></p></pre>
+  <h1>tokenizer</h1>
+  <h2 class='fragment'>recognizes language (JSON)</h2>
+  <h2 class='fragment'>passes tokens to validator</h2>
+</section>
+<section>
+  <h1>validator</h1>
+  <h2 class='fragment'>validates against provided schema</h2>
+  <h2 class='fragment'>uses tokens to create Ruby objects</h2>
+</section>
+<section>
+  <h1>MuskOx w/ Rails</h1>
+</section>
+<section>
+  <h2>Replace strong params</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="k">def </span><span class="nf">login_params</span>&#x000A;  <span class="n">params</span><span class="nf">.require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span>&#x000A;    <span class="n">permit</span><span class="p">(</span><span class="ss">:login</span><span class="p">,</span> <span class="ss">:password</span><span class="p">)</span>&#x000A;<span class="k">end</span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <h2>Replace Strong Params</h2>
+  <pre class="highlight ruby"><table><tbody><tr><td class="gutter gl"><div class="lineno">1</div><div class="lineno">2</div><div class="lineno">3</div><div class="lineno">4</div></td><td class="code"><span class="n">muskox_params</span> <span class="ss">:user_params</span> <span class="k">do</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span>&#x000A;  <span class="n">m</span><span class="nf">.require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span>&#x000A;    <span class="n">permit</span><span class="p">(</span><span class="ss">:login</span><span class="p">,</span> <span class="ss">:password</span><span class="p">)</span>&#x000A;<span class="k">end</span>&#x000A;</td></tr></tbody></table></pre>
+</section>
+<section>
+  <h1>Muskox Future</h1>
+  <h2>new tokenizer formats: XML, Form encoded data, ...</h2>
+</section>
+<section>
+  <h1>References</h1>
+  <h2>langsec.org</h2>
+  <h2>github.com/baroquebobcat/muskox</h2>
+  <aside class='notes'>
+    langsec.org has a lot of links to presentations that go through the langsec stuff with more rigor than I did, so if you want to learn more about that, it's a great place to get started.
+    Meredith L. Patterson
+  </aside>
+</section>
+<section>
+  <h1>Nick Howard</h1>
+  <h2>@baroquebobcat</h2>
+  <img src='/images/GnipLogo.png'>
+  <br>
+  <img src='/images/ducks/6792548131_mallard_sombrero.jpg'>
+  <br>
+  <a href='http://www.flickr.com/photos/blmiers2/6792548131' style='position: relative;top: -90px;right: -300px;color: white;'>photo (mod w/ sombrero)</a>
 </section>
 
     </div>
@@ -296,7 +1078,7 @@ Reveal.initialize({
         controls: true,
         progress: true,
         history: true,
-        center: true,
+        center: false,
         width: 1680,
         height: 1050,
 

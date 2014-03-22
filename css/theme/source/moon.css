@@ -1,8 +1,8 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
 /**
  * Solarized Dark theme for reveal.js.
  * Author: Achim Staebler
  */
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic);
 @font-face {
   font-family: 'League Gothic';
   src: url("../../lib/font/league_gothic-webfont.eot");
@@ -13,7 +13,7 @@
 /**
  * Solarized colors by Ethan Schoonover
  */
-/* line 32, /Users/nick/hacking/sql_workshop/docs/source/css/theme/source/moon.scss */
+/* line 32, /Users/nick/hacking/generate_parsers/source/css/theme/source/moon.scss */
 html * {
   color-profile: sRGB;
   rendering-intent: auto; }
@@ -21,12 +21,12 @@ html * {
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
-/* line 8, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 8, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 body {
   background: #002b36;
   background-color: #002b36; }
 
-/* line 13, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 13, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal {
   font-family: "Lato", sans-serif;
   font-size: 36px;
@@ -34,7 +34,7 @@ body {
   letter-spacing: -0.02em;
   color: #93a1a1; }
 
-/* line 21, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 21, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 ::selection {
   color: white;
   background: #d33682;
@@ -43,7 +43,7 @@ body {
 /*********************************************
  * HEADERS
  *********************************************/
-/* line 36, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 36, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal h1,
 .reveal h2,
 .reveal h3,
@@ -58,14 +58,14 @@ body {
   text-transform: uppercase;
   text-shadow: none; }
 
-/* line 48, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 48, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal h1 {
   text-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2); }
 
 /*********************************************
  * LINKS
  *********************************************/
-/* line 57, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 57, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal a:not(.image) {
   color: #268bd2;
   text-decoration: none;
@@ -75,13 +75,13 @@ body {
   -o-transition: color .15s ease;
   transition: color .15s ease; }
 
-/* line 67, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 67, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal a:not(.image):hover {
   color: #78b9e6;
   text-shadow: none;
   border: none; }
 
-/* line 74, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 74, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .roll span:after {
   color: #fff;
   background: #1a6091; }
@@ -89,7 +89,7 @@ body {
 /*********************************************
  * IMAGES
  *********************************************/
-/* line 84, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 84, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal section img {
   margin: 15px 0px;
   background: rgba(255, 255, 255, 0.12);
@@ -101,7 +101,7 @@ body {
   -o-transition: all .2s linear;
   transition: all .2s linear; }
 
-/* line 98, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 98, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal a:hover img {
   background: rgba(255, 255, 255, 0.2);
   border-color: #268bd2;
@@ -110,50 +110,50 @@ body {
 /*********************************************
  * NAVIGATION CONTROLS
  *********************************************/
-/* line 111, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 111, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-left,
 .reveal .controls div.navigate-left.enabled {
   border-right-color: #268bd2; }
 
-/* line 116, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 116, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-right,
 .reveal .controls div.navigate-right.enabled {
   border-left-color: #268bd2; }
 
-/* line 121, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 121, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-up,
 .reveal .controls div.navigate-up.enabled {
   border-bottom-color: #268bd2; }
 
-/* line 126, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 126, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-down,
 .reveal .controls div.navigate-down.enabled {
   border-top-color: #268bd2; }
 
-/* line 130, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 130, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-left.enabled:hover {
   border-right-color: #78b9e6; }
 
-/* line 134, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 134, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-right.enabled:hover {
   border-left-color: #78b9e6; }
 
-/* line 138, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 138, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-up.enabled:hover {
   border-bottom-color: #78b9e6; }
 
-/* line 142, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 142, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .controls div.navigate-down.enabled:hover {
   border-top-color: #78b9e6; }
 
 /*********************************************
  * PROGRESS BAR
  *********************************************/
-/* line 151, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 151, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .progress {
   background: rgba(0, 0, 0, 0.2); }
 
-/* line 154, /Users/nick/hacking/sql_workshop/docs/source/css/theme/template/theme.scss */
+/* line 154, /Users/nick/hacking/generate_parsers/source/css/theme/template/theme.scss */
 .reveal .progress span {
   background: #268bd2;
   -webkit-transition: width 800ms cubic-bezier(0.26, 0.86, 0.44, 0.985);

@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>Long Form</title>
+    
+    <link href="../css/normalize.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/all.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/syntax_highlighting.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="../css/curriculum.css" media="screen" rel="stylesheet" type="text/css" />
+    
+  </head>
+  
+  <body class="longform longform_index">
+    <p>bad regex (a+)+</p>
+
+<p>Do ToC @ LangSec pt</p>
+
+<p>More pics</p>
+
+<p>standards compliant XML is (probably) Recursively enumerable
+another reason XML is like violence: If you use a standards compliant parser, it can eat your lunch</p>
+
+<p>*most parsers add bounds which reduces XML power to context sensitive</p>
+
+<p>talk about how MuskOx makes it easier to have more definite error messages.</p>
+
+<p>TL;DR</p>
+
+<ul>
+<li>avoid impossible problems, like validating turing complete inputs</li>
+<li>validate inputs before parsing</li>
+<li><p>JSON &gt; XML; it&rsquo;s just ducky</p></li>
+<li><p>introduce lang sec</p></li>
+<li><p>input validation as formal lang recognition</p>
+
+<ul>
+<li>but not in a painful way</li>
+</ul></li>
+</ul>
+
+<p>in order to do that I need to explain what formal lang is
+explain chomsky hierarchy</p>
+
+<p>eg</p>
+
+<p>sanitizing text for HTML
+regex can&rsquo;t do it because nesting and escapes
+that&rsquo;s why rails&#39; sanitizer is a parser</p>
+
+<p>Rails doesn&rsquo;t do it, and neither should you!
+http://api.rubyonrails.org/classes/ActionView/Helpers/SanitizeHelper.html uses a simple HTML parser</p>
+
+<p>Two years ago, I went to a hacker conference called ShmooCon. It was a great experience. InfoSec is at once totally weird and very familiar. It&rsquo;s all about solving hard and sometimes unusual problems. Going made me feel like all the infrastructure I use on a day to day basis is held together w/ a bit of duct tape bailing wire and bubble gum. Not a pleasant feeling.</p>
+
+<p>My favorite talk though, was the <a href="www.youtube.com/watch?v=F7etmSeivU8‎">Science of Insecurity</a> by Meredith L. Patterson &amp; Sergey Bratus. For me it was mind candy. The idea was that it turns out you can use all that crap you learnt in Theory of Computation to prove things about the security of computational systems.</p>
+
+<p>This was mind blowing to me. I&rsquo;d enjoyed my theory courses, and occasionally saw how they might be useful, but this. This meant that ToC is vital to everything that talks over networks more or less. I obsessed about it for a few months, and then my excitement petered out and it became one of the things I rant about every now and then.</p>
+
+<p>A year later, I found myself thinking about it again, but this time I&rsquo;d connected it to another problem. Rails 4 had come out and with it a new way of validating input&ndash;strong params. This reminded me strongly of langsec and I dug into it.</p>
+
+<p>I found an ambiguity in the pattern language it uses, but I couldn&rsquo;t find any examples of cases where you might be able to exploit it unintentionally. The ambiguity gave me an idea though. What if there was a tool for specifying inputs that let you be more precise, and what if it was baked safely into the parser in a way that took into account langsec principles.</p>
+
+<p>Thus MuskOx was born. The idea behind muskox was to do input validation on the population interface of the parser. Instead of letting a parser just take data from the internet and make Ruby objects willy nilly, only create Ruby objects that conform to a specified schema.</p>
+
+<p>So I hacked something together with a copy pasted version of the native Ruby implementation of JSON parsing and a push down automata that implements schema validation.</p>
+
+<p>Just because the base language you are parsing isn&rsquo;t turing complete, doesn&rsquo;t mean your input language isn&rsquo;t.</p>
+
+<h2>qqqq</h2>
+
+<p>If the problem is that our code is so complex in its input handling, why would generating parsers make things better?</p>
+
+<p>fear leads to anger
+anger leads to hate
+hate leads to suffering</p>
+
+<p>just so</p>
+
+<h2>Cliffs Notes of Theory of Computation</h2>
+
+<p>a lot of Theory of Computation hinges around a few key concepts.
+While there are others, eg computability, for this we only really care about decidability.</p>
+
+<p>decidability is an old problem. It goes back to the debate about whether you can prove any statement within a formal system or whether formal systems of a particular complexity will inevitably have unprovable statements.</p>
+
+<p>It turns out via Turing that formal systems with certain properties will be undecidable; that is there will be statements in the system that cannot be either true or false.</p>
+
+<p>For computing, decidability usually reduces to the halting problem. The halting problem asks the question, &ldquo;Given a piece of input, will this machine halt?&rdquo; For Turing Machines, if you don&rsquo;t know the turing machines&#39; definition, figuring out whether the machine will halt for a given input is impossible.</p>
+
+<p>Since we&rsquo;re talking about input formats, another important piece of formality is formal languages and grammars. Specifically, a thing call the Chomsky hierarchy.</p>
+
+<p>the Chomsky hierarchy defines 4 base classes of languages:</p>
+
+<p>Recursively Enumerable
+Context Sensitive
+Context Free
+Regular</p>
+
+<p>each contains all the classes below it.
+Why do we care about this for input validation?</p>
+
+<p>Well, recognizing Recursively Enumerable languages is an undecidable problem. What do I mean? Well it&rsquo;s equivalent to trying to read and interpret a description of a turing machine&ndash;ie an interpreter.</p>
+
+<p>All the other language classes can be reliably parsed. Parsing them is decidable. That means you can know that for any finite input, the machine reading it will eventually terminate.</p>
+
+<p>Termination is a really handy property for a parser to have. Parsers that don&rsquo;t always terminate are balky finicky things and you can&rsquo;t trust them. Once you start parsing Recursively Enumerable things, you are in a world of pain because parsing is equivalent to running a turing machine!</p>
+
+<p>Don&rsquo;t do that. When recognizing the input language is undecidable, you run the risk of having a formally proven unsecure system. Like perma-unsecure. Like there is no higher powered machine that you can use to make sure there are no holes. Your goose is cooked.</p>
+
+<h1>50 but how?</h1>
+
+<p>Well, goal: to make sure that inputs are good <em>before</em> acting on them.
+we want to recognize their goodness / badness before we do anything</p>
+
+<p>yaml example allowed access to logic before checking if input was okay
+so we need to check first 
+-&gt;recognize good input first
+(remove undefined behavior)</p>
+
+<p>//more here</p>
+
+<p>how to tell if they are good or bad inputs?</p>
+
+<hr>
+
+<p>recognize. That&rsquo;s an interesting word.
+where have I seen that before?</p>
+
+<p>To wikipedia!
+http://en.wikipedia.org/wiki/Chomsky_hierarchy</p>
+
+<hr>
+
+<p>Theory of Computation</p>
+
+<p>specifically talking about formal languages and the machines that recognize them.</p>
+
+<p>If we think of inputs to our applications as formal languages, we can apply automata theory to them.</p>
+
+<p>Why is <em>that</em> useful for securing our apps?
+Well, for that we need a brief detour into formal languages and theory of computation
+but you don&rsquo;t need to break out your pencils. I&rsquo;m not doing any proofs, but I will be doing some hand waving, so stand back.</p>
+
+<p>Theory of Computation:
+Hand Wave Edition</p>
+
+<p>Chapter 0
+Decidability</p>
+
+<p>Decidability?
+In a formal system do all statements in that system have a yes or no answer?</p>
+
+<p>&ldquo;This statement is false.&rdquo;</p>
+
+<p>In english, clearly, there are statements that are neither.</p>
+
+<p>can a machine always give us a yes no answer, or will it run forever and never give an answer?</p>
+
+<p>Turing et al did a bunch of math and proved that formal systems with certain properties can have unprovable statements.</p>
+
+<p>In programming terms, the question is given this input, will a turing machine halt or not.</p>
+
+<p>&ldquo;halting problem&rdquo;
+&ldquo;run forever&rdquo;</p>
+
+<p>/Big hand wave</p>
+
+<p>Chapter 1
+Formal Languages</p>
+
+<p>There are classes of languages that are undecidable.</p>
+
+<p>???</p>
+
+<p>One consequence is that parsing may not halt.
+Other is you will always have program states that are unexpected.</p>
+
+    <script src="../js/viz.js" type="text/javascript"></script>
+<script src="../js/viz_helper.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      Vizzy();
+    </script>
+  </body>
+</html>
